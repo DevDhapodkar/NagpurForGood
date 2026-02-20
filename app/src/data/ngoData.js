@@ -202,33 +202,85 @@ export const ngoData = [
         }
     },
     {
-        id: 9,
-        name: "Five Fold Maitri Society",
-        president: "Mr Aman Bharadwaj / Mr Rajnish Khandagale",
-        address: "158/11A, Mecosabagh, Near Kadbi Chowk, Nagpur - 440001",
-        contact: "7775964171",
-        categories: ["Volunteering", "Food", "Healthcare"],
-        description: "Mission 'CHALO KHUSHIYAN BATEIN'. They ensure no one in Nagpur goes to bed hungry by collecting surplus food and running community 'Langars'.",
-        website: "https://www.chalokhushiyanbatein.in",
-        image: "https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?auto=format&fit=crop&q=80&w=800",
-        mockUPI: "fivefold@ybl",
-        certifications: ["80G (AAAAF5887BF20214)", "12A (AAAAF5887BE20216)"],
-        recentActivities: [
+        id: "five-fold-maitry",
+        name: "Five Fold Maitri Society (Chalo Khushiyan Baatein)",
+        chairperson: "Rajnish Madhusudan Khandagale (President)",
+        founder: "A. Bharadwaj",
+        address: "158/11 A, Mecosbagh Colony, Near Kadbi Chowk, Nagpur, Maharashtra",
+        contact: "1800 120 327733",
+        description: "Our flagship mission 'Chalo Khushiyan Baatein' ensures that no one in Nagpur sleeps hungry. We bridge the gap between food waste and hunger while providing holistic support to marginalized communities.",
+        longDescription: "Established in 2017, Five Fold Maitri Society is a registered non-profit trust headquartered in Nagpur. Our initiative, 'Chalo Khushiyan Baatein', targets the core of city-wide food insecurity. By leveraging a robust volunteer network and institutional partnerships, we've transformed the food landscape for over 120,000 citizens. Our philosophy revolves around the five folds of maitri: compassion, kindness, empathy, support, and joy. We don't just distribute meals; we distribute happiness and dignity.",
+        categories: ["Food", "Education", "Healthcare"],
+        image: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=2070",
+        website: "https://www.chalokhushiyanbatein.in/",
+        mockUPI: "fivefoldmaitry@upi",
+        verified: true,
+        certifications: ["80G", "12A", "CSR-1 Registered", "NITI Aayog"],
+        legalDetails: {
+            registrationNo: "F-0035696",
+            csr1: "CSR00057690",
+            section80G: "AAAAF5887BF20214",
+            section12A: "AAAAF5887BE20216"
+        },
+        leadership: [
+            { name: "Rajnish Khandagale", role: "President" },
+            { name: "Bhumika Pelne", role: "Vice President" },
+            { name: "Rohit Meshram", role: "Secretary" },
+            { name: "Vinesh Ukey", role: "Treasurer" },
+            { name: "Monu Thosar", role: "Joint Secretary" },
+            { name: "Ansh Dhomne", role: "IT Head" }
+        ],
+        impactStats: [
+            { label: "Individuals Fed", value: "121,200+" },
+            { label: "Surplus Meals Saved", value: "24,407+" },
+            { label: "Widow Families Supported", value: "500+" },
+            { label: "Volunteers Engaged", value: "1,200+" }
+        ],
+        programs: [
             {
-                title: "Monthly Langar Drive",
-                date: "Jan 2026",
-                description: "Fed over 1,500 individuals across various city locations this month."
+                title: "Monthly Langar Drives",
+                description: "Large-scale free food distribution events held across major junctions and hospitals in Nagpur, providing hot, nutritious meals to thousands in a single day.",
+                impact: "121K+ People Served"
             },
             {
                 title: "No Waste No Hunger",
-                date: "Continuous",
-                description: "Redistributed over 25,000 surplus meals from events to local needy families."
+                description: "A systemic initiative to collect surplus food from weddings, catering events, and households. Our logistics team ensures this food reaches slum communities within hours safely.",
+                impact: "24K+ Repurposed Meals"
+            },
+            {
+                title: "Widow Welfare Program",
+                description: "Providing monthly ration kits (groceries, essentials) to widowed women in rural and semi-urban Nagpur to ensure financial and caloric security.",
+                impact: "Ongoing Support"
+            },
+            {
+                title: "Hygiene & Sanitization",
+                description: "Monthly distribution of hygiene kits (soaps, masks, sanitary pads) coupled with health awareness workshops in marginalized settlements.",
+                impact: "Monthly Drives"
             }
         ],
-        impactStats: [
-            { label: "Meals Distributed", value: "120,000+" },
-            { label: "Families Supported", value: "5,000+" }
-        ]
+        recentActivities: [
+            {
+                title: "Mega Langar Drive 2026",
+                date: "Jan 2026",
+                description: "Distributed over 5,000 meals in a single day across Government Medical College (GMC) and Mayo Hospital premises."
+            },
+            {
+                title: "Winter Ration Distribution",
+                date: "Dec 2025",
+                description: "Supplied month-long dry ration kits to 200 widows and elderly individuals in the Kamptee area."
+            },
+            {
+                title: "Surplus Food Logistics Upgrade",
+                date: "Oct 2025",
+                description: "Onboarded 5 new local wedding caterers into the 'No Waste' network, increasing weekly meal recovery by 30%."
+            }
+        ],
+        socialLinks: {
+            instagram: "https://www.instagram.com/chalokhushiyanbateingofficial/",
+            facebook: "https://www.facebook.com/chalokhushiyanbatein/",
+            youtube: "https://www.youtube.com/c/FiveFoldMaitriChaloKhushiyanBaatein",
+            email: "info@chalokhushiyanbatein.in"
+        }
     },
     {
         id: 10,

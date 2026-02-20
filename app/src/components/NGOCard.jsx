@@ -1,13 +1,13 @@
-import React from 'react';
 import { ArrowRight, MapPin, CheckCircle2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
-const NGOCard = ({ ngo, onClick }) => {
+const NGOCard = ({ ngo }) => {
     const isVerified = ngo.certifications && ngo.certifications.length > 0;
 
     return (
-        <div
-            onClick={() => onClick(ngo)}
-            className="glass-card rounded-3xl overflow-hidden cursor-pointer group flex flex-col h-full hover:z-30 relative"
+        <Link
+            to={`/ngo/${ngo.id}`}
+            className="glass-card rounded-3xl overflow-hidden cursor-pointer group flex flex-col h-full hover:z-30 relative block"
         >
             <div className="relative h-56 w-full overflow-hidden">
                 {/* Placeholder image that zooms slightly on hover */}
@@ -53,7 +53,7 @@ const NGOCard = ({ ngo, onClick }) => {
                     </button>
                 </div>
             </div>
-        </div>
+        </Link>
     );
 };
 

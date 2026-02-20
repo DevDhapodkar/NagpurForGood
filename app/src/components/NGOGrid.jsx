@@ -1,7 +1,7 @@
 import React from 'react';
 import NGOCard from './NGOCard';
 
-const NGOGrid = ({ ngos, onNgoClick }) => {
+const NGOGrid = ({ ngos }) => {
     if (ngos.length === 0) {
         return (
             <div className="w-full max-w-5xl mx-auto px-6 py-20 text-center glass-panel rounded-2xl">
@@ -19,7 +19,7 @@ const NGOGrid = ({ ngos, onNgoClick }) => {
     return (
         <div className="w-full max-w-5xl mx-auto px-6 pb-24 z-20 relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {ngos.map((ngo) => (
-                <NGOCard key={ngo.id} ngo={ngo} onClick={onNgoClick} />
+                <NGOCard key={ngo.id} ngo={ngo} />
             ))}
         </div>
     );

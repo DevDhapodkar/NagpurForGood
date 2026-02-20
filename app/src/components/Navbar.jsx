@@ -1,10 +1,10 @@
-import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Navbar = () => {
     return (
         <nav className="fixed w-full z-50 glass-panel py-4 px-6 md:px-12 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-violet-500 to-pink-500 p-[2px]">
+            <Link to="/" className="flex items-center gap-3 group">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-violet-500 to-pink-500 p-[2px] transition-transform group-hover:scale-110">
                     <div className="w-full h-full rounded-full bg-zinc-950 flex items-center justify-center">
                         <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-pink-400">
                             NfG
@@ -14,7 +14,7 @@ const Navbar = () => {
                 <span className="text-xl font-bold tracking-tight text-white hidden sm:block">
                     Nagpur For Good
                 </span>
-            </div>
+            </Link>
 
             <div className="flex items-center gap-4">
                 <button className="glass-btn px-4 py-2 rounded-lg text-sm font-medium text-white/90 hover:text-white transition-colors">
