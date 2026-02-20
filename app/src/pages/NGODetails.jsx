@@ -49,12 +49,19 @@ const NGODetails = () => {
                                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
 
                                 <div className="absolute bottom-8 left-8 right-8">
-                                    <div className="flex flex-wrap gap-2 mb-4">
-                                        {ngo.categories.map((cat, idx) => (
-                                            <span key={idx} className="px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-[10px] font-black text-white/90 border border-white/10 uppercase tracking-widest">
-                                                {cat}
-                                            </span>
-                                        ))}
+                                    <div className="flex items-center gap-4 mb-4">
+                                        {ngo.logo && (
+                                            <div className="w-16 h-16 rounded-2xl bg-white p-2 shadow-2xl overflow-hidden backdrop-blur-md shrink-0">
+                                                <img src={ngo.logo} alt="NGO Logo" className="w-full h-full object-contain" />
+                                            </div>
+                                        )}
+                                        <div className="flex flex-wrap gap-2">
+                                            {ngo.categories.map((cat, idx) => (
+                                                <span key={idx} className="px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-[10px] font-black text-white/90 border border-white/10 uppercase tracking-widest">
+                                                    {cat}
+                                                </span>
+                                            ))}
+                                        </div>
                                     </div>
                                     <h1 className="text-4xl sm:text-6xl font-black text-white mb-2 leading-none tracking-tighter uppercase">{ngo.name}</h1>
                                     {ngo.founder && (
@@ -129,22 +136,31 @@ const NGODetails = () => {
                         <section className="glass-panel p-8 sm:p-10 rounded-[2.5rem]">
                             <div className="flex items-center gap-3 mb-10">
                                 <span className="w-10 h-1 bg-emerald-500 rounded-full"></span>
-                                <h2 className="text-xs font-black uppercase tracking-[0.3em] text-emerald-400">Recent Milestones</h2>
+                                <h2 className="text-xs font-black uppercase tracking-[0.3em] text-emerald-400">Official Milestones & Drives</h2>
                             </div>
                             <div className="space-y-12 relative before:absolute before:inset-0 before:left-[11px] before:w-[2px] before:bg-white/5">
                                 {ngo.recentActivities.map((activity, idx) => (
-                                    <div key={idx} className="relative pl-12">
-                                        <div className="absolute left-0 top-1 w-6 h-6 rounded-full bg-[#09090b] border-4 border-emerald-500/50 flex items-center justify-center">
+                                    <a
+                                        key={idx}
+                                        href={activity.sourceUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="relative pl-12 block group/milestone transition-all hover:translate-x-2"
+                                    >
+                                        <div className="absolute left-0 top-1 w-6 h-6 rounded-full bg-[#09090b] border-4 border-emerald-500/50 flex items-center justify-center transition-colors group-hover/milestone:border-emerald-400">
                                             <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
                                         </div>
                                         <div>
-                                            <span className="text-[10px] font-black text-emerald-400/70 border border-emerald-400/20 px-2 py-1 rounded-md uppercase tracking-wider mb-2 inline-block">
-                                                {activity.date}
-                                            </span>
-                                            <h4 className="text-xl font-bold text-white mb-2">{activity.title}</h4>
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <span className="text-[10px] font-black text-emerald-400/70 border border-emerald-400/20 px-2 py-1 rounded-md uppercase tracking-wider">
+                                                    {activity.date}
+                                                </span>
+                                                <ExternalLink className="w-3 h-3 text-white/20 group-hover/milestone:text-emerald-400 transition-colors" />
+                                            </div>
+                                            <h4 className="text-xl font-bold text-white mb-2 group-hover/milestone:text-emerald-400 transition-colors">{activity.title}</h4>
                                             <p className="text-white/40 text-sm leading-relaxed">{activity.description}</p>
                                         </div>
-                                    </div>
+                                    </a>
                                 ))}
                             </div>
                         </section>

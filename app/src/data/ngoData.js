@@ -236,24 +236,24 @@ export const ngoData = [
         ],
         impactStats: [
             {
-                label: "Individuals Fed",
-                value: "121,200+",
-                sourceUrl: "https://www.give.do/nonprofits/five-fold-maitri-society-chalo-khushiyan-baatein"
+                label: "Monthly Langar",
+                value: "127,600+",
+                sourceUrl: "https://www.chalokhushiyanbatein.in/index.html"
             },
             {
-                label: "Surplus Meals Saved",
-                value: "24,407",
-                sourceUrl: "https://www.donatekart.com/CFKB/Five-Fold-Maitri-Society/"
+                label: "Surplus Food Collected",
+                value: "27,441+",
+                sourceUrl: "https://www.chalokhushiyanbatein.in/index.html"
             },
             {
-                label: "COVID-19 Support",
-                value: "43,877",
-                sourceUrl: "https://www.give.do/nonprofits/five-fold-maitri-society-chalo-khushiyan-baatein"
+                label: "Lockdown Distribution",
+                value: "43,877+",
+                sourceUrl: "https://www.chalokhushiyanbatein.in/index.html"
             },
             {
-                label: "Total Langars",
-                value: "24+",
-                sourceUrl: "https://www.chalokhushiyanbatein.in/about-us"
+                label: "Total Lives Impacted",
+                value: "198,918+",
+                sourceUrl: "https://www.chalokhushiyanbatein.in/index.html"
             }
         ],
         programs: [
@@ -278,21 +278,31 @@ export const ngoData = [
                 impact: "Monthly Drives"
             }
         ],
+        logo: "https://www.chalokhushiyanbatein.in/images/complete_logo.png",
         recentActivities: [
             {
-                title: "Mega Langar Drive 2026",
-                date: "Jan 2026",
-                description: "Distributed over 5,000 meals in a single day across Government Medical College (GMC) and Mayo Hospital premises."
+                title: "Large Scale Langar Drive",
+                date: "Monthly",
+                description: "Massive food distribution drives providing fresh meals to thousands across Nagpur.",
+                sourceUrl: "https://www.chalokhushiyanbatein.in/food-distribution.html"
             },
             {
-                title: "Winter Ration Distribution",
-                date: "Dec 2025",
-                description: "Supplied month-long dry ration kits to 200 widows and elderly individuals in the Kamptee area."
+                title: "Ration Kits for Widows",
+                date: "Monthly",
+                description: "Door-to-door distribution of dry ration and provisions to widowed families in marginalized areas.",
+                sourceUrl: "https://www.chalokhushiyanbatein.in/ration_kits_to_widow.html"
             },
             {
-                title: "Surplus Food Logistics Upgrade",
-                date: "Oct 2025",
-                description: "Onboarded 5 new local wedding caterers into the 'No Waste' network, increasing weekly meal recovery by 30%."
+                title: "Educational Support Kits",
+                date: "Regular",
+                description: "Distributing study material kits to children to ensure continuity in their learning process.",
+                sourceUrl: "https://www.chalokhushiyanbatein.in/monthly_study_material_kits.html"
+            },
+            {
+                title: "Hygiene & Sanitization Kit",
+                date: "Regular",
+                description: "Health awareness drives combined with the distribution of hygiene materials to slum settlements.",
+                sourceUrl: "https://www.chalokhushiyanbatein.in/monthly_hygiene_kits.html"
             }
         ],
         socialLinks: {
