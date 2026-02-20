@@ -5,7 +5,6 @@ import FilterBar from './components/FilterBar';
 import NGOGrid from './components/NGOGrid';
 import NGOModal from './components/NGOModal';
 import { ngoData, allCategories } from './data/ngoData';
-import './App.css';
 
 function App() {
     const [selectedCategory, setSelectedCategory] = useState('All');
