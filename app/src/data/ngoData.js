@@ -211,7 +211,7 @@ export const ngoData = [
         description: "Our flagship mission 'Chalo Khushiyan Baatein' ensures that no one in Nagpur sleeps hungry. We bridge the gap between food waste and hunger while providing holistic support to marginalized communities.",
         longDescription: "Established in 2017, Five Fold Maitri Society is a registered non-profit trust headquartered in Nagpur. Our initiative, 'Chalo Khushiyan Baatein', targets the core of city-wide food insecurity. By leveraging a robust volunteer network and institutional partnerships, we've transformed the food landscape for over 120,000 citizens. Our philosophy revolves around the five folds of maitri: compassion, kindness, empathy, support, and joy. We don't just distribute meals; we distribute happiness and dignity.",
         categories: ["Food", "Education", "Healthcare"],
-        image: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=2070",
+        image: "https://www.chalokhushiyanbatein.in/images/updated_slider_2.jpg",
         website: "https://www.chalokhushiyanbatein.in/",
         mockUPI: "fivefoldmaitry@upi",
         verified: true,
