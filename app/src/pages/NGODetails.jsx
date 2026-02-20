@@ -64,6 +64,27 @@ const NGODetails = () => {
                             </div>
                         </section>
 
+                        {/* Team & Leadership */}
+                        {ngo.leadership && (
+                            <section className="glass-panel p-8 sm:p-10 rounded-[2.5rem] animate-in slide-in-from-bottom-4 duration-700">
+                                <div className="flex items-center gap-3 mb-10">
+                                    <span className="w-10 h-1 bg-blue-500 rounded-full"></span>
+                                    <h2 className="text-xs font-black uppercase tracking-[0.3em] text-blue-400">Team & Leadership</h2>
+                                </div>
+                                <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
+                                    {ngo.leadership.map((lead, idx) => (
+                                        <div key={idx} className="bg-white/5 p-6 rounded-2xl border border-white/5 hover:bg-white/10 transition-all text-center group/team">
+                                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 mx-auto flex items-center justify-center text-sm font-black text-white mb-4 shadow-lg group-hover/team:scale-110 transition-transform">
+                                                {lead.name.split(' ').map(n => n[0]).join('')}
+                                            </div>
+                                            <h4 className="text-sm font-black text-white line-clamp-1">{lead.name}</h4>
+                                            <p className="text-[10px] uppercase font-black text-white/30 tracking-widest mt-1">{lead.role}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </section>
+                        )}
+
                         {/* Mission Section */}
                         <section className="glass-panel p-8 sm:p-12 rounded-[2.5rem]">
                             <div className="flex items-center gap-3 mb-6">
@@ -141,10 +162,19 @@ const NGODetails = () => {
 
                             <div className="grid grid-cols-2 gap-4 mb-8">
                                 {ngo.impactStats?.map((stat, idx) => (
-                                    <div key={idx} className="bg-white/5 rounded-2xl p-4 border border-white/5">
-                                        <div className="text-xl font-black text-white">{stat.value}</div>
-                                        <div className="text-[10px] uppercase text-white/30 font-black tracking-tight leading-none mt-1">{stat.label}</div>
-                                    </div>
+                                    <a
+                                        key={idx}
+                                        href={stat.sourceUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="bg-white/5 rounded-2xl p-4 border border-white/5 hover:bg-white/10 hover:border-violet-500/30 transition-all group/stat block"
+                                    >
+                                        <div className="text-xl font-black text-white group-hover/stat:text-violet-400 transition-colors">{stat.value}</div>
+                                        <div className="text-[10px] uppercase text-white/30 font-black tracking-tight leading-none mt-1 flex items-center gap-1">
+                                            {stat.label}
+                                            <ExternalLink className="w-2 h-2 opacity-0 group-hover/stat:opacity-100 transition-opacity" />
+                                        </div>
+                                    </a>
                                 ))}
                             </div>
 

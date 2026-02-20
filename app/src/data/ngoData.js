@@ -223,18 +223,38 @@ export const ngoData = [
             section12A: "AAAAF5887BE20216"
         },
         leadership: [
+            { name: "A. Bharadwaj", role: "Founder" },
             { name: "Rajnish Khandagale", role: "President" },
             { name: "Bhumika Pelne", role: "Vice President" },
             { name: "Rohit Meshram", role: "Secretary" },
             { name: "Vinesh Ukey", role: "Treasurer" },
             { name: "Monu Thosar", role: "Joint Secretary" },
-            { name: "Ansh Dhomne", role: "IT Head" }
+            { name: "Ansh Dhomne", role: "IT Head" },
+            { name: "Anita Katam", role: "Sr. Team Leader" },
+            { name: "Sunny Raj", role: "Team Leader" },
+            { name: "Saroj Kuppalwar", role: "Board Member" }
         ],
         impactStats: [
-            { label: "Individuals Fed", value: "121,200+" },
-            { label: "Surplus Meals Saved", value: "24,407+" },
-            { label: "Widow Families Supported", value: "500+" },
-            { label: "Volunteers Engaged", value: "1,200+" }
+            {
+                label: "Individuals Fed",
+                value: "121,200+",
+                sourceUrl: "https://www.give.do/nonprofits/five-fold-maitri-society-chalo-khushiyan-baatein"
+            },
+            {
+                label: "Surplus Meals Saved",
+                value: "24,407",
+                sourceUrl: "https://www.donatekart.com/CFKB/Five-Fold-Maitri-Society/"
+            },
+            {
+                label: "COVID-19 Support",
+                value: "43,877",
+                sourceUrl: "https://www.give.do/nonprofits/five-fold-maitri-society-chalo-khushiyan-baatein"
+            },
+            {
+                label: "Total Langars",
+                value: "24+",
+                sourceUrl: "https://www.chalokhushiyanbatein.in/about-us"
+            }
         ],
         programs: [
             {
