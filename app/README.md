@@ -1,8 +1,8 @@
-# 🛸 Nagpur For Good
+# 🛸 Nagpur Good Organisation
 
 **Connect. Support. Transform Nagpur.**
 
-Nagpur For Good is a high-fidelity, transparent information portal designed to bridge the gap between intent and authentic local impact. We provide a curated, source-verified directory of NGOs in Nagpur, enabling users to discover, support, and track real-world change.
+Nagpur Good Organisation is a high-fidelity, transparent information portal designed to bridge the gap between intent and authentic local impact. We provide a curated, source-verified directory of NGOs in Nagpur, enabling users to discover, support, and track real-world change.
 
 ---
 

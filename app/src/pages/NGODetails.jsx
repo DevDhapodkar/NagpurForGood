@@ -6,6 +6,7 @@ import {
     CheckCircle2, ExternalLink
 } from 'lucide-react';
 import { ngoData } from '../data/ngoData';
+import { getCertConfig } from '../constants/certifications';
 
 const NGODetails = () => {
     const { id } = useParams();
@@ -171,6 +172,26 @@ const NGODetails = () => {
 
                         {/* Fast Stats Card */}
                         <div className="glass-panel p-8 rounded-[2.5rem] sticky top-32">
+
+                            {/* Action Buttons - Moved to Top */}
+                            <div className="space-y-4 mb-10">
+                                <button
+                                    onClick={() => setShowDonation(true)}
+                                    className="w-full py-5 rounded-2xl bg-gradient-to-r from-violet-600 to-pink-600 font-black text-white text-sm uppercase tracking-[0.2em] shadow-[0_20px_40px_rgba(236,72,153,0.3)] hover:shadow-[0_25px_50px_rgba(236,72,153,0.5)] transition-all transform hover:-translate-y-1 active:scale-95"
+                                >
+                                    GIVE DIRECT SUPPORT
+                                </button>
+                                <a
+                                    href={ngo.website}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-full py-5 rounded-2xl border-2 border-white/10 font-black text-white text-sm uppercase tracking-[0.2em] flex items-center justify-center gap-2 hover:bg-white/5 transition-all"
+                                >
+                                    <ExternalLink className="w-4 h-4" />
+                                    OFFICIAL PORTAL
+                                </a>
+                            </div>
+
                             <div className="flex items-center gap-2 mb-8">
                                 <Award className="w-5 h-5 text-violet-400" />
                                 <h3 className="font-black text-white uppercase tracking-widest text-sm">Transparency Hub</h3>
@@ -196,33 +217,19 @@ const NGODetails = () => {
 
                             {/* Legal Badges */}
                             <div className="space-y-3 mb-8">
-                                {ngo.certifications?.map((cert, idx) => (
-                                    <div key={idx} className="flex items-center gap-3 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
-                                        <CheckCircle2 className="w-4 h-4" />
-                                        <span className="text-xs font-black uppercase tracking-widest">{cert} Verified</span>
-                                    </div>
-                                ))}
+                                {ngo.certifications?.map((cert, idx) => {
+                                    const config = getCertConfig(cert);
+                                    return (
+                                        <div key={idx} className={`flex items-center gap-3 p-3 rounded-xl ${config.colors.bg} border ${config.colors.border} ${config.colors.text}`}>
+                                            <config.icon className="w-4 h-4" />
+                                            <span className="text-xs font-black uppercase tracking-widest">{config.label} Verified</span>
+                                        </div>
+                                    );
+                                })}
                             </div>
 
                             <div className="h-[1px] bg-white/5 mb-8"></div>
 
-                            {/* Action Buttons */}
-                            <div className="space-y-4">
-                                <button
-                                    onClick={() => setShowDonation(true)}
-                                    className="w-full py-5 rounded-2xl bg-gradient-to-r from-violet-600 to-pink-600 font-black text-white text-sm uppercase tracking-[0.2em] shadow-[0_20px_40px_rgba(236,72,153,0.3)] hover:shadow-[0_25px_50px_rgba(236,72,153,0.5)] transition-all transform hover:-translate-y-1 active:scale-95"
-                                >
-                                    Give Direct Support
-                                </button>
-                                <a
-                                    href={ngo.website}
-                                    target="_blank"
-                                    className="w-full py-5 rounded-2xl border-2 border-white/10 font-black text-white text-sm uppercase tracking-[0.2em] flex items-center justify-center gap-2 hover:bg-white/5 transition-all"
-                                >
-                                    <ExternalLink className="w-4 h-4" />
-                                    Official Portal
-                                </a>
-                            </div>
 
                             {/* Leadership Mini list */}
                             {ngo.leadership && (

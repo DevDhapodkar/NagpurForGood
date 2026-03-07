@@ -5,10 +5,27 @@ import Home from './pages/Home';
 import NGODetails from './pages/NGODetails';
 
 function App() {
+    const [theme, setTheme] = React.useState(() => {
+        return localStorage.getItem('theme') || 'dark';
+    });
+
+    React.useEffect(() => {
+        if (theme === 'light') {
+            document.documentElement.classList.add('light');
+        } else {
+            document.documentElement.classList.remove('light');
+        }
+        localStorage.setItem('theme', theme);
+    }, [theme]);
+
+    const toggleTheme = () => {
+        setTheme(prev => prev === 'dark' ? 'light' : 'dark');
+    };
+
     return (
         <Router>
-            <div className="min-h-screen font-sans selection:bg-pink-500/30 bg-[#09090b]">
-                <Navbar />
+            <div className="min-h-screen font-sans selection:bg-pink-500/30">
+                <Navbar theme={theme} toggleTheme={toggleTheme} />
 
                 <Routes>
                     <Route path="/" element={<Home />} />
@@ -21,7 +38,7 @@ function App() {
                         <div className="flex items-center gap-4">
                             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-pink-600 flex items-center justify-center text-white font-black text-lg shadow-lg">N</div>
                             <div>
-                                <div className="text-xl font-black text-white tracking-tighter uppercase">Nagpur For Good</div>
+                                <div className="text-xl font-black text-white tracking-tighter uppercase">Nagpur Good Organisation</div>
                                 <div className="text-[10px] uppercase tracking-widest text-white/40 font-black mt-[-2px]">Authentic Impact Hub</div>
                             </div>
                         </div>

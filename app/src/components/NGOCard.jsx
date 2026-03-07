@@ -15,12 +15,12 @@ const NGOCard = ({ ngo }) => {
                     className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 ease-out group-hover:scale-110"
                     style={{ backgroundImage: `url(${ngo.image || 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80&w=800'})` }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#09090b] via-transparent to-transparent opacity-90" />
+                <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg-primary)] via-transparent to-transparent opacity-80" />
 
                 {/* Badges container */}
                 <div className="absolute top-4 left-4 flex flex-wrap gap-2">
                     {ngo.categories.slice(0, 2).map((cat, idx) => (
-                        <span key={idx} className="px-2.5 py-1 rounded-lg text-[10px] uppercase tracking-wider font-black bg-white/10 backdrop-blur-md border border-white/20 text-white">
+                        <span key={idx} className="px-2.5 py-1 rounded-lg text-[10px] uppercase tracking-wider font-black bg-white/20 backdrop-blur-md border border-white/30 text-white shadow-sm">
                             {cat}
                         </span>
                     ))}
@@ -34,20 +34,20 @@ const NGOCard = ({ ngo }) => {
             </div>
 
             <div className="p-7 flex flex-col flex-grow relative">
-                <h3 className="text-2xl font-black text-white mb-3 group-hover:text-pink-400 transition-colors line-clamp-1">
+                <h3 className="text-2xl font-black text-[var(--text-primary)] mb-3 group-hover:text-pink-400 transition-colors">
                     {ngo.name}
                 </h3>
-                <p className="text-sm text-white/50 mb-6 line-clamp-2 leading-relaxed font-light">
+                <p className="text-sm text-[var(--text-secondary)] mb-6 line-clamp-2 leading-relaxed font-light">
                     {ngo.description || "Dedicated to social welfare and community support in Nagpur."}
                 </p>
 
                 <div className="mt-auto space-y-4">
-                    <div className="flex items-start gap-2 text-xs text-white/40">
+                    <div className="flex items-start gap-2 text-xs text-[var(--text-muted)]">
                         <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-violet-500" />
                         <span className="line-clamp-1">{ngo.address}</span>
                     </div>
 
-                    <button className="w-full py-4 rounded-2xl bg-white/5 group-hover:bg-white/10 border border-white/10 group-hover:border-violet-500/30 text-white text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-3">
+                    <button className="w-full py-4 rounded-2xl glass-btn group-hover:border-violet-500/30 text-[var(--text-primary)] text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-3">
                         Explore Portfolio
                         <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
                     </button>
