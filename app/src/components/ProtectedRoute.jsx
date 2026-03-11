@@ -19,6 +19,11 @@ const ProtectedRoute = ({ children }) => {
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
 
+    if (!user.isAdmin) {
+        // Redirect non-admins to home
+        return <Navigate to="/" replace />;
+    }
+
     return children;
 };
 

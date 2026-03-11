@@ -75,10 +75,15 @@ const Navbar = ({ theme, toggleTheme }) => {
                             <Share2 className="w-4 h-4 group-hover:-translate-y-0.5 transition-transform" />
                         </button>
                         
-                        {user && (
+                        {user?.isAdmin ? (
                             <Link to="/admin" className="ml-2 py-3 px-6 rounded-2xl font-black text-white text-[11px] uppercase tracking-widest bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-primary)] hover:border-blue-500/30 hover:text-blue-400 transition-all flex items-center gap-2 group shadow-lg">
                                 <LayoutDashboard className="w-4 h-4 group-hover:scale-110 transition-transform" />
                                 Dashboard
+                            </Link>
+                        ) : (
+                            <Link to="/login" className="ml-2 py-3 px-6 rounded-2xl font-black text-white text-[11px] uppercase tracking-widest bg-gradient-to-r from-orange-600 to-red-600 hover:shadow-[0_10px_30px_rgba(239,68,68,0.3)] transform hover:-translate-y-0.5 transition-all flex items-center gap-2 group shadow-lg">
+                                <LogIn className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                                Login
                             </Link>
                         )}
                     </div>

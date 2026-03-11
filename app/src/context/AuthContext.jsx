@@ -6,7 +6,8 @@ import {
     signOut,
     updateProfile
 } from 'firebase/auth';
-import { auth } from '../utils/firebase';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { auth, db } from '../utils/firebase';
 
 const AuthContext = createContext();
 
@@ -20,14 +21,28 @@ export const AuthProvider = ({ children }) => {
 
     // Sync with Firebase Auth state
     useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+        const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
             if (firebaseUser) {
-                setUser({
+                // Fetch additional user data from Firestore
+                const userDocRef = doc(db, 'users', firebaseUser.uid);
+                const userDocSnap = await getDoc(userDocRef);
+                
+                let userData = {
                     uid: firebaseUser.uid,
                     email: firebaseUser.email,
                     displayName: firebaseUser.displayName,
-                    // Map any other needed fields
-                });
+                    isAdmin: false // Default
+                };
+
+                if (userDocSnap.exists()) {
+                    const data = userDocSnap.data();
+                    userData = {
+                        ...userData,
+                        ...data
+                    };
+                }
+
+                setUser(userData);
             } else {
                 setUser(null);
             }
@@ -50,11 +65,23 @@ export const AuthProvider = ({ children }) => {
     const signup = async (name, email, password) => {
         try {
             const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-            // Update profile with name
-            await updateProfile(userCredential.user, {
+            const firebaseUser = userCredential.user;
+
+            // Update profile with name in Firebase Auth
+            await updateProfile(firebaseUser, {
                 displayName: name
             });
-            return userCredential.user;
+
+            // Create user document in Firestore
+            await setDoc(doc(db, 'users', firebaseUser.uid), {
+                uid: firebaseUser.uid,
+                email: email,
+                displayName: name,
+                isAdmin: false,
+                createdAt: new Date().toISOString()
+            });
+
+            return firebaseUser;
         } catch (error) {
             console.error("Signup failed", error);
             throw error;

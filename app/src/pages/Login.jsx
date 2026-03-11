@@ -114,9 +114,9 @@ const Login = () => {
 
                     <div className="mt-8 pt-6 border-t border-[var(--border-color)] text-center relative z-10">
                         <p className="text-[var(--text-secondary)] text-sm">
-                            Need admin access?{' '}
+                            Don't have an account?{' '}
                             <Link to="/signup" className="text-orange-400 font-bold hover:text-orange-300 transition-colors">
-                                Apply for Account
+                                Create Account
                             </Link>
                         </p>
                     </div>
