@@ -12,12 +12,12 @@ const ThemeToggle = ({ theme, toggleTheme }) => {
                 {theme === 'dark' ? (
                     <Sun size={20} className="text-amber-400 fill-amber-400/20 transition-transform duration-500 group-hover:rotate-45" />
                 ) : (
-                    <Moon size={20} className="text-violet-600 fill-violet-600/20 transition-transform duration-500 group-hover:-rotate-12" />
+                    <Moon size={20} className="text-orange-600 fill-orange-600/20 transition-transform duration-500 group-hover:-rotate-12" />
                 )}
             </div>
             
             {/* Subtle glow effect on hover */}
-            <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl ${theme === 'dark' ? 'bg-amber-400/20' : 'bg-violet-600/20'}`} />
+            <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl ${theme === 'dark' ? 'bg-amber-400/20' : 'bg-orange-600/20'}`} />
         </button>
     );
 };

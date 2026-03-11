@@ -22,7 +22,7 @@ const Hero = () => {
                 <button onClick={() => window.scrollTo({ top: document.getElementById('discover').offsetTop - 100, behavior: 'smooth' })} className="px-8 py-4 rounded-xl font-bold glass-btn transition-all sm:w-auto w-full shadow-lg hover:-translate-y-1">
                     Explore Organizations
                 </button>
-                <Link to="/ngo/template-ngo" className="px-8 py-4 rounded-xl font-bold border border-white/10 hover:bg-white/5 transition-all sm:w-auto w-full shadow-lg hover:-translate-y-1 flex items-center justify-center">
+                <Link to="/ngo/template-ngo" className="px-8 py-4 rounded-xl font-bold border border-theme-primary/10 hover:bg-theme-primary/5 transition-all sm:w-auto w-full shadow-lg hover:-translate-y-1 flex items-center justify-center">
                     See Example Profile
                 </Link>
             </div>

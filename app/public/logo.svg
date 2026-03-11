@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 120" width="300" height="120">
+  <defs>
+    <!-- Drop shadow for the logo -->
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.15" />
+    </filter>
+  </defs>
+
+  <g transform="translate(10, 10)" filter="url(#shadow)">
+    <!-- Text "NG" -->
+    <text x="0" y="85" font-family="Outfit, sans-serif" font-weight="900" font-size="80" fill="#ea580c">NG</text>
+    
+    <!-- Orange Slice Graphic -->
+    <g transform="translate(120, 0)">
+      <!-- Orange Peel -->
+      <circle cx="50" cy="50" r="45" fill="#f97316" />
+      <!-- Inner pith -->
+      <circle cx="50" cy="50" r="40" fill="#fff7ed" />
+      
+      <!-- Slices -->
+      <g stroke="#fff7ed" stroke-width="3">
+        <path d="M 50 10 L 50 50 L 78 22 Z" fill="#fb923c" />
+        <path d="M 78 22 L 50 50 L 90 50 Z" fill="#fb923c" />
+        <path d="M 90 50 L 50 50 L 78 78 Z" fill="#fb923c" />
+        <path d="M 78 78 L 50 50 L 50 90 Z" fill="#fb923c" />
+        <path d="M 50 90 L 50 50 L 22 78 Z" fill="#fb923c" />
+        <path d="M 22 78 L 50 50 L 10 50 Z" fill="#fb923c" />
+        <path d="M 10 50 L 50 50 L 22 22 Z" fill="#fb923c" />
+        <path d="M 22 22 L 50 50 L 50 10 Z" fill="#fb923c" />
+      </g>
+      
+      <!-- Small seed -->
+      <path d="M 58 40 Q 60 42 58 44 Q 56 42 58 40" fill="#ffedd5" />
+      <path d="M 42 60 Q 40 58 42 56 Q 44 58 42 60" fill="#ffedd5" />
+      
+      <!-- Leaves -->
+      <g transform="translate(45, -5)">
+        <path d="M 5 10 C -5 -5 15 -10 25 0 C 15 15 -5 15 5 10 Z" fill="#22c55e" />
+        <path d="M 5 10 C 15 -15 35 -5 25 10 C 10 25 -5 15 5 10 Z" fill="#16a34a" />
+        <path d="M 5 10 L 15 0" stroke="#f0fdf4" stroke-width="1.5" />
+      </g>
+    </g>
+  </g>
+</svg>
