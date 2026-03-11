@@ -1,33 +1,81 @@
 import React, { useState } from 'react';
 import { 
     Users, BarChart3, ShieldCheck, Settings, LogOut, 
-    Search, Plus, MoreVertical, Edit2, Trash2, Globe
+    Search, Plus, MoreVertical, Edit2, Trash2, Globe, AlertCircle, CheckCircle2
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useNGOs } from '../context/NGOContext';
+import { useToast } from '../context/ToastContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { ngoData } from '../data/ngoData';
 import { calculateTrustScore } from '../utils/trustScore';
+import NGOFormModal from '../components/NGOFormModal';
 
 const AdminDashboard = () => {
     const { user, logout } = useAuth();
+    const { ngoList, addNGO, updateNGO, deleteNGO, verifyNGO } = useNGOs();
+    const { showToast } = useToast();
     const navigate = useNavigate();
+    
     const [searchQuery, setSearchQuery] = useState('');
+    const [activeTab, setActiveTab] = useState('overview'); // 'overview' or 'verifications'
+    
+    // Form Modal State
+    const [isFormOpen, setIsFormOpen] = useState(false);
+    const [editingNGO, setEditingNGO] = useState(null);
 
     const handleLogout = () => {
         logout();
         navigate('/');
     };
 
-    // Calculate mock stats
-    const totalNGOs = ngoData.length;
-    const verifiedNGOs = ngoData.filter(ngo => ngo.verified).length;
-    const totalPrograms = ngoData.reduce((acc, ngo) => acc + (ngo.programs?.length || 0), 0);
+    // Calculate dynamic stats
+    const totalNGOs = ngoList.length;
+    const verifiedNGOs = ngoList.filter(ngo => ngo.verified).length;
+    const pendingNGOs = totalNGOs - verifiedNGOs;
+    const totalPrograms = ngoList.reduce((acc, ngo) => acc + (ngo.programs?.length || 0), 0);
 
-    // Filter NGOs
-    const filteredNGOs = ngoData.filter(ngo => 
+    // Filter NGOs based on tab and search
+    let displayedNGOs = activeTab === 'verifications' 
+        ? ngoList.filter(ngo => !ngo.verified)
+        : ngoList;
+
+    displayedNGOs = displayedNGOs.filter(ngo => 
         ngo.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         ngo.categories.some(c => c.toLowerCase().includes(searchQuery.toLowerCase()))
     );
+
+    // Handlers
+    const handleAddClick = () => {
+        setEditingNGO(null);
+        setIsFormOpen(true);
+    };
+
+    const handleEditClick = (ngo) => {
+        setEditingNGO(ngo);
+        setIsFormOpen(true);
+    };
+
+    const handleDeleteClick = (id) => {
+        if(window.confirm("Are you sure you want to delete this organization profile?")) {
+            deleteNGO(id);
+            showToast("Organization deleted successfully.", "success");
+        }
+    };
+
+    const handleVerifyClick = (id) => {
+        verifyNGO(id);
+        showToast("Organization has been verified and approved.", "success");
+    };
+
+    const handleModalSubmit = (formData) => {
+        if (editingNGO) {
+            updateNGO(editingNGO.id, formData);
+            showToast("Profile updated successfully.", "success");
+        } else {
+            addNGO(formData);
+            showToast("New organization added. Awaiting verification.", "success");
+        }
+    };
 
     return (
         <div className="min-h-screen bg-[#09090b] text-[var(--text-primary)] font-sans pt-24 pb-20 animate-in fade-in duration-700">
@@ -48,25 +96,39 @@ const AdminDashboard = () => {
                     <nav className="glass-panel p-4 rounded-3xl space-y-2">
                         <div className="px-3 py-2 text-[10px] uppercase tracking-widest text-[var(--text-muted)] font-black mb-2">Platform Control</div>
                         
-                        <a href="#" className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-orange-500/10 text-orange-400 border border-orange-500/20 font-bold transition-all">
+                        <button 
+                            onClick={() => setActiveTab('overview')}
+                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl font-bold transition-all ${activeTab === 'overview' ? 'bg-orange-500/10 text-orange-400 border border-orange-500/20' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]'}`}
+                        >
                             <BarChart3 className="w-5 h-5" />
                             <span className="text-sm">Overview</span>
-                        </a>
+                        </button>
                         
-                        <a href="#" className="flex items-center gap-3 px-4 py-3 rounded-2xl text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)] transition-all group">
+                        <button 
+                            onClick={() => setActiveTab('manage')}
+                            className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)] transition-all group"
+                        >
                             <Users className="w-5 h-5 group-hover:text-amber-400 transition-colors" />
                             <span className="text-sm font-medium">Manage NGOs</span>
-                        </a>
+                        </button>
 
-                        <a href="#" className="flex items-center gap-3 px-4 py-3 rounded-2xl text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)] transition-all group">
-                            <ShieldCheck className="w-5 h-5 group-hover:text-emerald-400 transition-colors" />
-                            <span className="text-sm font-medium">Verifications</span>
-                        </a>
+                        <button 
+                            onClick={() => setActiveTab('verifications')}
+                            className={`w-full flex items-center justify-between px-4 py-3 rounded-2xl transition-all ${activeTab === 'verifications' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold' : 'text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)] font-medium group'}`}
+                        >
+                            <div className="flex items-center gap-3">
+                                <ShieldCheck className={`w-5 h-5 ${activeTab !== 'verifications' && 'group-hover:text-emerald-400 transition-colors'}`} />
+                                <span className="text-sm">Verifications</span>
+                            </div>
+                            {pendingNGOs > 0 && (
+                                <span className="bg-red-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full">{pendingNGOs}</span>
+                            )}
+                        </button>
 
-                        <a href="#" className="flex items-center gap-3 px-4 py-3 rounded-2xl text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)] transition-all group">
+                        <button className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)] transition-all group">
                             <Settings className="w-5 h-5 group-hover:text-blue-400 transition-colors" />
                             <span className="text-sm font-medium">Settings</span>
-                        </a>
+                        </button>
                     </nav>
 
                     <button 
@@ -84,47 +146,56 @@ const AdminDashboard = () => {
                     {/* Header line */}
                     <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-[var(--border-color)] pb-6">
                         <div>
-                            <h1 className="text-3xl font-black font-serif tracking-tight">Dashboard Overview</h1>
+                            <h1 className="text-3xl font-black font-serif tracking-tight">
+                                {activeTab === 'verifications' ? 'Pending Verifications' : 'Dashboard Overview'}
+                            </h1>
                             <p className="text-[var(--text-secondary)] text-sm mt-1">Manage and monitor verified organizations across Nagpur.</p>
                         </div>
                         
-                        <button className="py-3 px-6 rounded-2xl font-black text-white text-xs uppercase tracking-widest bg-emerald-600 hover:bg-emerald-500 shadow-[0_5px_15px_rgba(16,185,129,0.2)] hover:shadow-[0_10px_25px_rgba(16,185,129,0.4)] transition-all transform hover:-translate-y-0.5 active:scale-95 flex items-center gap-2">
+                        <button 
+                            onClick={handleAddClick}
+                            className="py-3 px-6 rounded-2xl font-black text-white text-xs uppercase tracking-widest bg-emerald-600 hover:bg-emerald-500 shadow-[0_5px_15px_rgba(16,185,129,0.2)] hover:shadow-[0_10px_25px_rgba(16,185,129,0.4)] transition-all transform hover:-translate-y-0.5 active:scale-95 flex items-center gap-2"
+                        >
                             <Plus className="w-4 h-4" /> Add NGO Profile
                         </button>
                     </div>
 
-                    {/* Stats Grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                        <div className="glass-panel p-6 rounded-3xl relative overflow-hidden group">
-                            <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/10 rounded-full blur-xl group-hover:bg-blue-500/20 transition-colors"></div>
-                            <div className="relative z-10">
-                                <div className="text-[10px] uppercase font-black tracking-widest text-[var(--text-muted)] mb-2">Total Organizations</div>
-                                <div className="text-4xl font-black font-serif text-[var(--text-primary)] tracking-tighter">{totalNGOs}</div>
+                    {/* Stats Grid - Only show on Overview */}
+                    {activeTab !== 'verifications' && (
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 animate-in slide-in-from-bottom-4 duration-500">
+                            <div className="glass-panel p-6 rounded-3xl relative overflow-hidden group">
+                                <div className="absolute -right-6 -top-6 w-24 h-24 bg-blue-500/10 rounded-full blur-xl group-hover:bg-blue-500/20 transition-colors"></div>
+                                <div className="relative z-10">
+                                    <div className="text-[10px] uppercase font-black tracking-widest text-[var(--text-muted)] mb-2">Total Organizations</div>
+                                    <div className="text-4xl font-black font-serif text-[var(--text-primary)] tracking-tighter">{totalNGOs}</div>
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="glass-panel p-6 rounded-3xl relative overflow-hidden group">
-                            <div className="absolute -right-6 -top-6 w-24 h-24 bg-emerald-500/10 rounded-full blur-xl group-hover:bg-emerald-500/20 transition-colors"></div>
-                            <div className="relative z-10">
-                                <div className="text-[10px] uppercase font-black tracking-widest text-[var(--text-muted)] mb-2">Verified Direct Access</div>
-                                <div className="text-4xl font-black font-serif text-[var(--text-primary)] tracking-tighter">{verifiedNGOs}</div>
+                            <div className="glass-panel p-6 rounded-3xl relative overflow-hidden group">
+                                <div className="absolute -right-6 -top-6 w-24 h-24 bg-emerald-500/10 rounded-full blur-xl group-hover:bg-emerald-500/20 transition-colors"></div>
+                                <div className="relative z-10">
+                                    <div className="text-[10px] uppercase font-black tracking-widest text-[var(--text-muted)] mb-2">Verified Direct Access</div>
+                                    <div className="text-4xl font-black font-serif text-[var(--text-primary)] tracking-tighter">{verifiedNGOs}</div>
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="glass-panel p-6 rounded-3xl relative overflow-hidden group">
-                            <div className="absolute -right-6 -top-6 w-24 h-24 bg-orange-500/10 rounded-full blur-xl group-hover:bg-orange-500/20 transition-colors"></div>
-                            <div className="relative z-10">
-                                <div className="text-[10px] uppercase font-black tracking-widest text-[var(--text-muted)] mb-2">Active Impact Programs</div>
-                                <div className="text-4xl font-black font-serif text-[var(--text-primary)] tracking-tighter">{totalPrograms}</div>
+                            <div className="glass-panel p-6 rounded-3xl relative overflow-hidden group">
+                                <div className="absolute -right-6 -top-6 w-24 h-24 bg-orange-500/10 rounded-full blur-xl group-hover:bg-orange-500/20 transition-colors"></div>
+                                <div className="relative z-10">
+                                    <div className="text-[10px] uppercase font-black tracking-widest text-[var(--text-muted)] mb-2">Active Impact Programs</div>
+                                    <div className="text-4xl font-black font-serif text-[var(--text-primary)] tracking-tighter">{totalPrograms}</div>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    )}
 
                     {/* Data Table Area */}
-                    <div className="glass-panel rounded-[2.5rem] overflow-hidden flex flex-col h-[600px]">
+                    <div className="glass-panel rounded-[2.5rem] overflow-hidden flex flex-col h-[600px] animate-in slide-in-from-bottom-8 duration-700">
                         {/* Table Header / Toolbar */}
                         <div className="p-6 border-b border-[var(--border-color)] flex flex-col sm:flex-row items-center gap-4 justify-between bg-[var(--bg-primary)]/50">
-                            <h2 className="text-lg font-black tracking-tight">Registered Entities Data</h2>
+                            <h2 className="text-lg font-black tracking-tight">
+                                {activeTab === 'verifications' ? 'Pending Approval Queue' : 'Registered Entities Data'}
+                            </h2>
                             
                             <div className="relative w-full sm:w-64 container group">
                                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[var(--text-muted)] group-focus-within:text-blue-400 transition-colors">
@@ -141,18 +212,28 @@ const AdminDashboard = () => {
                         </div>
 
                         {/* List */}
-                        <div className="flex-1 overflow-y-auto p-2">
-                            {filteredNGOs.length === 0 ? (
+                        <div className="flex-1 overflow-y-auto p-2 custom-scrollbar">
+                            {displayedNGOs.length === 0 ? (
                                 <div className="h-full flex flex-col items-center justify-center text-[var(--text-muted)] space-y-4">
-                                    <Search className="w-12 h-12 opacity-20" />
-                                    <p className="text-sm font-medium">No organizations found matching "{searchQuery}"</p>
+                                    {activeTab === 'verifications' ? (
+                                        <>
+                                            <CheckCircle2 className="w-12 h-12 text-emerald-500/50" />
+                                            <p className="text-sm font-medium">Yay! No pending verifications.</p>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Search className="w-12 h-12 opacity-20" />
+                                            <p className="text-sm font-medium">No organizations found matching "{searchQuery}"</p>
+                                        </>
+                                    )}
+                                    
                                 </div>
                             ) : (
                                 <div className="space-y-2">
-                                    {filteredNGOs.map((ngo) => {
+                                    {displayedNGOs.map((ngo) => {
                                         const { score, level } = calculateTrustScore(ngo);
                                         return (
-                                            <div key={ngo.id} className="group flex flex-col lg:flex-row lg:items-center gap-4 p-4 rounded-2xl hover:bg-[var(--bg-secondary)] transition-all border border-transparent hover:border-[var(--border-color)]">
+                                            <div key={ngo.id} className={`group flex flex-col lg:flex-row lg:items-center gap-4 p-4 rounded-2xl hover:bg-[var(--bg-secondary)] transition-all border ${!ngo.verified ? 'border-amber-500/20 bg-amber-500/5' : 'border-transparent hover:border-[var(--border-color)]'}`}>
                                                 
                                                 {/* Image & Name */}
                                                 <div className="flex items-center gap-4 flex-1 min-w-[300px]">
@@ -160,9 +241,14 @@ const AdminDashboard = () => {
                                                         <img src={ngo.image} alt={ngo.name} className="w-full h-full object-cover" />
                                                     </div>
                                                     <div>
-                                                        <Link to={`/ngo/${ngo.id}`} target="_blank" className="font-bold text-[var(--text-primary)] hover:text-blue-400 transition-colors block line-clamp-1">{ngo.name}</Link>
+                                                        <div className="flex items-center gap-2 block max-w-full">
+                                                            <Link to={`/ngo/${ngo.id}`} target="_blank" className="font-bold text-[var(--text-primary)] hover:text-blue-400 transition-colors truncate">{ngo.name}</Link>
+                                                            {!ngo.verified && (
+                                                                <span className="bg-amber-500/10 text-amber-500 border border-amber-500/20 text-[9px] px-2 py-0.5 rounded-full font-black uppercase tracking-widest shrink-0">Pending</span>
+                                                            )}
+                                                        </div>
                                                         <div className="text-[10px] uppercase font-black tracking-widest text-[var(--text-muted)] mt-1 flex gap-2 truncate">
-                                                            {ngo.categories.slice(0, 2).join(' • ')}
+                                                            {(ngo.categories || []).slice(0, 2).join(' • ')}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -194,14 +280,16 @@ const AdminDashboard = () => {
 
                                                 {/* Actions */}
                                                 <div className="flex items-center justify-end gap-2 shrink-0 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
-                                                    <button className="p-2 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-blue-400 hover:border-blue-500/30 transition-all" title="Edit Profile">
+                                                    {!ngo.verified && (
+                                                        <button onClick={() => handleVerifyClick(ngo.id)} className="p-2 mr-2 pr-3 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500 hover:text-black transition-all flex items-center gap-1 font-bold text-xs">
+                                                            <ShieldCheck className="w-4 h-4" /> Approve
+                                                        </button>
+                                                    )}
+                                                    <button onClick={() => handleEditClick(ngo)} className="p-2 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-blue-400 hover:border-blue-500/30 transition-all" title="Edit Profile">
                                                         <Edit2 className="w-4 h-4" />
                                                     </button>
-                                                    <button className="p-2 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-red-400 hover:border-red-500/30 transition-all" title="Delete Profile">
+                                                    <button onClick={() => handleDeleteClick(ngo.id)} className="p-2 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-red-400 hover:border-red-500/30 transition-all" title="Delete Profile">
                                                         <Trash2 className="w-4 h-4" />
-                                                    </button>
-                                                    <button className="p-2 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all">
-                                                        <MoreVertical className="w-4 h-4" />
                                                     </button>
                                                 </div>
                                             </div>
@@ -214,6 +302,14 @@ const AdminDashboard = () => {
 
                 </main>
             </div>
+
+            {/* NGO Modal component */}
+            <NGOFormModal 
+                isOpen={isFormOpen} 
+                onClose={() => setIsFormOpen(false)} 
+                onSubmit={handleModalSubmit}
+                initialData={editingNGO}
+            />
         </div>
     );
 };

@@ -8,6 +8,8 @@ import Signup from './pages/Signup';
 import AdminDashboard from './pages/AdminDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
+import { NGOProvider } from './context/NGOContext';
+import { ToastProvider } from './context/ToastContext';
 
 function App() {
     const [theme, setTheme] = React.useState(() => {
@@ -29,7 +31,9 @@ function App() {
 
     return (
         <AuthProvider>
-            <Router>
+            <NGOProvider>
+                <ToastProvider>
+                    <Router>
                 <div className="min-h-screen font-sans selection:bg-amber-500/30 flex flex-col">
                     <Navbar theme={theme} toggleTheme={toggleTheme} />
 
@@ -72,6 +76,8 @@ function App() {
                 </footer>
             </div>
         </Router>
+        </ToastProvider>
+        </NGOProvider>
     </AuthProvider>
     );
 }
