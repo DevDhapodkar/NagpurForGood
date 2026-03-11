@@ -10,80 +10,73 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    // Mock initial check from localStorage
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+    // Verify token on load
     useEffect(() => {
-        const storedUser = localStorage.getItem('ngo_admin_user');
-        if (storedUser) {
-            try {
-                setUser(JSON.parse(storedUser));
-            } catch (error) {
-                console.error("Failed to parse stored user", error);
-                localStorage.removeItem('ngo_admin_user');
+        const verifySession = async () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const res = await fetch(`${API_URL}/auth/me`, {
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    
+                    if (res.ok) {
+                        const userData = await res.json();
+                        setUser(userData);
+                    } else {
+                        localStorage.removeItem('token');
+                    }
+                } catch (error) {
+                    console.error("Session verification failed", error);
+                    localStorage.removeItem('token');
+                }
             }
-        }
-        setLoading(false);
-    }, []);
+            setLoading(false);
+        };
+        verifySession();
+    }, [API_URL]);
 
     const login = async (email, password) => {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                // Mock verification against stored users
-                const storedUsers = JSON.parse(localStorage.getItem('ngo_admin_users') || '[]');
-                const foundUser = storedUsers.find(u => u.email === email && u.password === password);
-
-                // Default admin fallback if none exists
-                if (email === 'admin@nagpur.org' && password === 'admin123') {
-                     const adminUser = { id: 'admin-1', email, name: 'Super Admin', role: 'admin' };
-                     setUser(adminUser);
-                     localStorage.setItem('ngo_admin_user', JSON.stringify(adminUser));
-                     resolve(adminUser);
-                     return;
-                }
-
-                if (foundUser) {
-                    // Omit password from session
-                    const sessionUser = { id: foundUser.id, email: foundUser.email, name: foundUser.name, role: 'admin' };
-                    setUser(sessionUser);
-                    localStorage.setItem('ngo_admin_user', JSON.stringify(sessionUser));
-                    resolve(sessionUser);
-                } else {
-                    reject(new Error("Invalid email or password"));
-                }
-            }, 800); // Simulate network latency
+        const res = await fetch(`${API_URL}/auth/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
         });
+        
+        const data = await res.json();
+        
+        if (!res.ok) {
+            throw new Error(data.msg || "Login failed");
+        }
+
+        localStorage.setItem('token', data.token);
+        setUser(data.user);
+        return data.user;
     };
 
     const signup = async (name, email, password) => {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                const storedUsers = JSON.parse(localStorage.getItem('ngo_admin_users') || '[]');
-                
-                if (storedUsers.some(u => u.email === email)) {
-                    reject(new Error("Email already registered"));
-                    return;
-                }
-
-                const newUser = {
-                    id: Date.now().toString(),
-                    name,
-                    email,
-                    password // Storing in plain text locally for mock purposes only
-                };
-
-                storedUsers.push(newUser);
-                localStorage.setItem('ngo_admin_users', JSON.stringify(storedUsers));
-                
-                const sessionUser = { id: newUser.id, email: newUser.email, name: newUser.name, role: 'admin' };
-                setUser(sessionUser);
-                localStorage.setItem('ngo_admin_user', JSON.stringify(sessionUser));
-                resolve(sessionUser);
-            }, 800);
+        const res = await fetch(`${API_URL}/auth/signup`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, password })
         });
+        
+        const data = await res.json();
+        
+        if (!res.ok) {
+            throw new Error(data.msg || "Signup failed");
+        }
+
+        localStorage.setItem('token', data.token);
+        setUser(data.user);
+        return data.user;
     };
 
     const logout = () => {
         setUser(null);
-        localStorage.removeItem('ngo_admin_user');
+        localStorage.removeItem('token');
     };
 
     const value = {
@@ -91,7 +84,8 @@ export const AuthProvider = ({ children }) => {
         loading,
         login,
         signup,
-        logout
+        logout,
+        token: localStorage.getItem('token')
     };
 
     return (

@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { ngoData as initialNgoData } from '../data/ngoData';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { useAuth } from './AuthContext';
 
 const NGOContext = createContext();
 
@@ -7,53 +7,106 @@ export const useNGOs = () => useContext(NGOContext);
 
 export const NGOProvider = ({ children }) => {
     const [ngoList, setNgoList] = useState([]);
+    const { token } = useAuth();
+    const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
-    // Load from localStorage or fallback to initial data
-    useEffect(() => {
-        const storedData = localStorage.getItem('nagpurForGood_ngos');
-        if (storedData) {
-            try {
-                setNgoList(JSON.parse(storedData));
-            } catch (e) {
-                console.error("Failed to parse NGO data from localStorage", e);
-                setNgoList(initialNgoData);
+    const fetchNGOs = useCallback(async () => {
+        try {
+            const res = await fetch(`${API_URL}/ngos`);
+            if (res.ok) {
+                const data = await res.json();
+                setNgoList(data);
             }
-        } else {
-            setNgoList(initialNgoData);
-            localStorage.setItem('nagpurForGood_ngos', JSON.stringify(initialNgoData));
+        } catch (error) {
+            console.error("Failed to fetch NGOs", error);
         }
-    }, []);
+    }, [API_URL]);
 
-    // Helper to persist list
-    const saveNGOs = (newList) => {
-        setNgoList(newList);
-        localStorage.setItem('nagpurForGood_ngos', JSON.stringify(newList));
+    // Initial load from MongoDB via Express
+    useEffect(() => {
+        fetchNGOs();
+    }, [fetchNGOs]);
+
+    // CRUD operations mapped to API
+    const addNGO = async (newNGO) => {
+        try {
+            const res = await fetch(`${API_URL}/ngos`, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` 
+                },
+                body: JSON.stringify(newNGO)
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setNgoList(prev => [...prev, data]);
+                return data;
+            } else {
+                throw new Error(data.msg || "Failed to add NGO");
+            }
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
     };
 
-    // CRUD operations
-    const addNGO = (newNGO) => {
-        const ngoWithId = {
-            ...newNGO,
-            id: newNGO.id || newNGO.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-            verified: false // Admin must verify
-        };
-        saveNGOs([...ngoList, ngoWithId]);
-        return ngoWithId;
+    const updateNGO = async (id, updatedData) => {
+        try {
+            const res = await fetch(`${API_URL}/ngos/${id}`, {
+                method: 'PUT',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` 
+                },
+                body: JSON.stringify(updatedData)
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setNgoList(prev => prev.map(ngo => ngo.id === id ? data : ngo));
+            } else {
+                throw new Error(data.msg || "Failed to update NGO");
+            }
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
     };
 
-    const updateNGO = (id, updatedData) => {
-        const newList = ngoList.map(ngo => ngo.id === id ? { ...ngo, ...updatedData } : ngo);
-        saveNGOs(newList);
+    const deleteNGO = async (id) => {
+        try {
+            const res = await fetch(`${API_URL}/ngos/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) {
+                setNgoList(prev => prev.filter(ngo => ngo.id !== id));
+            } else {
+                const data = await res.json();
+                throw new Error(data.msg || "Failed to delete NGO");
+            }
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
     };
 
-    const deleteNGO = (id) => {
-        const newList = ngoList.filter(ngo => ngo.id !== id);
-        saveNGOs(newList);
-    };
-
-    const verifyNGO = (id) => {
-        const newList = ngoList.map(ngo => ngo.id === id ? { ...ngo, verified: true } : ngo);
-        saveNGOs(newList);
+    const verifyNGO = async (id) => {
+        try {
+            const res = await fetch(`${API_URL}/ngos/${id}/verify`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (res.ok) {
+                setNgoList(prev => prev.map(ngo => ngo.id === id ? data : ngo));
+            } else {
+                throw new Error(data.msg || "Failed to verify NGO");
+            }
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
     };
 
     return (
@@ -62,7 +115,8 @@ export const NGOProvider = ({ children }) => {
             addNGO,
             updateNGO,
             deleteNGO,
-            verifyNGO
+            verifyNGO,
+            refreshNGOs: fetchNGOs
         }}>
             {children}
         </NGOContext.Provider>
