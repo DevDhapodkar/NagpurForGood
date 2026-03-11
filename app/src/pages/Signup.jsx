@@ -53,14 +53,14 @@ const Signup = () => {
                 {/* Header */}
                 <div className="text-center mb-10 text-theme-primary h-[8rem] flex flex-col items-center">
                     <img src="/logo.png" alt="Logo" className="h-20 w-auto object-contain drop-shadow-md mb-4"/>
-                    <h1 className="text-3xl font-black font-serif tracking-tight">Admin Registration</h1>
+                    <h1 className="text-3xl font-black font-serif tracking-tight">Partner Registration</h1>
                     <p className="text-xs uppercase tracking-[0.2em] font-black text-theme-primary/40 mt-1">Platform Management</p>
                 </div>
 
                 {/* Glassmorphism Card */}
                 <div className="glass-panel p-8 sm:p-10 rounded-[2.5rem] shadow-2xl relative overflow-hidden backdrop-blur-xl">
-                    <div className="absolute top-0 left-0 -ml-20 -mt-20 w-40 h-40 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
-                    <div className="absolute bottom-0 right-0 -mr-20 -mb-20 w-40 h-40 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none"></div>
+                    <div className="absolute top-0 left-0 -ml-20 -mt-20 w-40 h-40 bg-red-500/20 rounded-full blur-3xl pointer-events-none"></div>
+                    <div className="absolute bottom-0 right-0 -mr-20 -mb-20 w-40 h-40 bg-orange-500/20 rounded-full blur-3xl pointer-events-none"></div>
 
                     <h2 className="text-xl font-black text-[var(--text-primary)] mb-6 text-center">Create Dashboard Account</h2>
 
@@ -74,7 +74,7 @@ const Signup = () => {
                     <form onSubmit={handleSubmit} className="space-y-5 relative z-10">
                         <div className="space-y-4">
                             <div className="relative group">
-                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[var(--text-muted)] group-focus-within:text-blue-400 transition-colors">
+                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[var(--text-muted)] group-focus-within:text-orange-400 transition-colors">
                                     <User className="w-5 h-5" />
                                 </div>
                                 <input
@@ -82,13 +82,13 @@ const Signup = () => {
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
                                     placeholder="Full Name"
-                                    className="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-primary)] rounded-2xl pl-12 pr-4 py-4 text-sm focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all placeholder:text-[var(--text-muted)]"
+                                    className="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-primary)] rounded-2xl pl-12 pr-4 py-4 text-sm focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/50 transition-all placeholder:text-[var(--text-muted)]"
                                     disabled={isSubmitting}
                                 />
                             </div>
 
                             <div className="relative group">
-                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[var(--text-muted)] group-focus-within:text-blue-400 transition-colors">
+                                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[var(--text-muted)] group-focus-within:text-orange-400 transition-colors">
                                     <Mail className="w-5 h-5" />
                                 </div>
                                 <input
@@ -136,7 +136,7 @@ const Signup = () => {
                             className={`w-full py-4 rounded-2xl font-black text-white text-sm uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${
                                 isSubmitting 
                                 ? 'bg-zinc-800 text-zinc-500 cursor-not-allowed' 
-                                : 'bg-gradient-to-r from-blue-600 to-emerald-600 shadow-[0_10px_30px_rgba(16,185,129,0.3)] hover:shadow-[0_15px_40px_rgba(16,185,129,0.5)] transform hover:-translate-y-1 active:scale-95'
+                                : 'bg-gradient-to-r from-orange-600 to-red-600 shadow-[0_10px_30px_rgba(239,68,68,0.3)] hover:shadow-[0_15px_40px_rgba(239,68,68,0.5)] transform hover:-translate-y-1 active:scale-95'
                             }`}
                         >
                             {isSubmitting ? (
@@ -151,8 +151,8 @@ const Signup = () => {
 
                     <div className="mt-8 pt-6 border-t border-[var(--border-color)] text-center relative z-10">
                         <p className="text-[var(--text-secondary)] text-sm">
-                            Already an admin?{' '}
-                            <Link to="/login" className="text-blue-400 font-bold hover:text-blue-300 transition-colors">
+                            Already have an account?{' '}
+                            <Link to="/login" className="text-orange-400 font-bold hover:text-orange-300 transition-colors">
                                 Sign In here
                             </Link>
                         </p>

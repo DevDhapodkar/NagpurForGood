@@ -28,9 +28,9 @@ const NGOCard = ({ ngo }) => {
                     ))}
                     {isVerified && (
                         <span className={`px-2.5 py-1 rounded-lg text-[10px] uppercase font-black backdrop-blur-md border flex items-center gap-1 shadow-sm ${
-                            score >= 80 ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400' :
-                            score >= 50 ? 'bg-amber-500/20 border-amber-500/30 text-amber-400' :
-                            'bg-blue-500/20 border-blue-500/30 text-blue-400'
+                            score >= 80 ? 'bg-amber-500/20 border-amber-500/30 text-amber-500' :
+                            score >= 50 ? 'bg-orange-500/20 border-orange-500/30 text-orange-500' :
+                            'bg-red-500/20 border-red-500/30 text-red-400'
                         }`}>
                             <ShieldCheck className="w-3 h-3" />
                             Trust: {score}%

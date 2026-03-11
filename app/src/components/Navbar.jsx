@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, Share2, Moon, Sun, Search, ShieldCheck, HeartPulse, ExternalLink, LogIn, LayoutDashboard } from 'lucide-react';
+import { Menu, X, Share2, Moon, Sun, Search, ShieldCheck, HeartPulse, ExternalLink, LogIn, LogOut, LayoutDashboard } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -7,7 +7,7 @@ const Navbar = ({ theme, toggleTheme }) => {
     const [scrolled, setScrolled] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const { pathname } = useLocation();
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
 
     // Handle scroll effect
     useEffect(() => {
@@ -61,31 +61,107 @@ const Navbar = ({ theme, toggleTheme }) => {
 
                     {/* Desktop Navigation */}
                     <div className="hidden md:flex flex-1 items-center justify-end gap-6 pr-4 border-r border-[var(--border-color)] mr-6">
-                        <a href="#about" onClick={(e) => { e.preventDefault(); /* Smooth scroll to about if on home */ }} className="text-[11px] font-black uppercase tracking-widest text-[var(--text-secondary)] hover:text-orange-400 transition-colors">Mission</a>
-                        <a href="#directory" onClick={(e) => { e.preventDefault(); }} className="text-[11px] font-black uppercase tracking-widest text-[var(--text-secondary)] hover:text-emerald-400 transition-colors">Directory</a>
-                        <a href="#impact" onClick={(e) => { e.preventDefault(); }} className="text-[11px] font-black uppercase tracking-widest text-[var(--text-secondary)] hover:text-blue-400 transition-colors">Impact</a>
+                        <Link to="/mission" className={`text-[11px] font-black uppercase tracking-widest transition-colors ${pathname === '/mission' ? 'text-orange-500' : 'text-[var(--text-secondary)] hover:text-orange-400'}`}>Mission</Link>
+                        <Link to="/directory" className={`text-[11px] font-black uppercase tracking-widest transition-colors ${pathname === '/directory' ? 'text-amber-500' : 'text-[var(--text-secondary)] hover:text-amber-500'}`}>Directory</Link>
+                        <Link to="/impact" className={`text-[11px] font-black uppercase tracking-widest transition-colors ${pathname === '/impact' ? 'text-red-500' : 'text-[var(--text-secondary)] hover:text-red-500'}`}>Impact</Link>
                     </div>
 
-                    {/* Desktop Actions */}
-                    <div className="hidden md:flex items-center gap-3 relative z-50">
-                        <button onClick={toggleTheme} className="p-3 rounded-2xl glass-btn text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all group" aria-label="Toggle theme">
-                            {theme === 'dark' ? <Sun className="w-4 h-4 group-hover:rotate-90 transition-transform duration-500" /> : <Moon className="w-4 h-4 group-hover:-rotate-12 transition-transform duration-500" />}
-                        </button>
-                        <button onClick={handleShare} className="p-3 rounded-2xl glass-btn text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all group" aria-label="Share page">
-                            <Share2 className="w-4 h-4 group-hover:-translate-y-0.5 transition-transform" />
-                        </button>
+                    {/* Actions */}
+                    <div className="flex items-center gap-2 sm:gap-3 relative z-50">
+                        {/* Desktop-only Actions */}
+                        <div className="hidden md:flex items-center gap-3">
+                            <button onClick={toggleTheme} className="p-3 rounded-2xl glass-btn text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all group" aria-label="Toggle theme">
+                                {theme === 'dark' ? <Sun className="w-4 h-4 group-hover:rotate-90 transition-transform duration-500" /> : <Moon className="w-4 h-4 group-hover:-rotate-12 transition-transform duration-500" />}
+                            </button>
+                            <button onClick={handleShare} className="p-3 rounded-2xl glass-btn text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all group" aria-label="Share page">
+                                <Share2 className="w-4 h-4 group-hover:-translate-y-0.5 transition-transform" />
+                            </button>
+                        </div>
                         
-                        {user?.isAdmin ? (
-                            <Link to="/admin" className="ml-2 py-3 px-6 rounded-2xl font-black text-white text-[11px] uppercase tracking-widest bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-primary)] hover:border-blue-500/30 hover:text-blue-400 transition-all flex items-center gap-2 group shadow-lg">
-                                <LayoutDashboard className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                                Dashboard
-                            </Link>
-                        ) : (
-                            <Link to="/login" className="ml-2 py-3 px-6 rounded-2xl font-black text-white text-[11px] uppercase tracking-widest bg-gradient-to-r from-orange-600 to-red-600 hover:shadow-[0_10px_30px_rgba(239,68,68,0.3)] transform hover:-translate-y-0.5 transition-all flex items-center gap-2 group shadow-lg">
-                                <LogIn className="w-4 h-4 group-hover:scale-110 transition-transform" />
-                                Login
-                            </Link>
-                        )}
+                        {/* Authentication / Dashboard */}
+                        <div className="hidden sm:block">
+                            {user ? (
+                                <div className="flex items-center gap-3">
+                                    {user.isAdmin ? (
+                                        <Link to="/admin" className="py-3 px-6 rounded-2xl font-black text-white text-[11px] uppercase tracking-widest bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-primary)] hover:border-orange-500/30 hover:text-orange-400 transition-all flex items-center gap-2 group shadow-lg">
+                                            <LayoutDashboard className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                                            Dashboard
+                                        </Link>
+                                    ) : (
+                                        <div className="px-4 py-2.5 rounded-2xl bg-orange-500/10 border border-orange-500/20 text-orange-500 text-[10px] uppercase font-black tracking-widest flex items-center gap-2">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></div>
+                                            Hi, {user.displayName?.split(' ')[0] || 'Partner'}
+                                        </div>
+                                    )}
+                                    <button 
+                                        onClick={logout} 
+                                        className="p-3 rounded-2xl glass-btn text-[var(--text-secondary)] hover:text-red-400 hover:bg-red-500/5 transition-all group" 
+                                        aria-label="Logout"
+                                    >
+                                        <LogOut className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                                    </button>
+                                </div>
+                            ) : (
+                                <Link to="/login" className="py-3 px-6 rounded-2xl font-black text-white text-[11px] uppercase tracking-widest bg-gradient-to-r from-orange-600 to-red-600 hover:shadow-[0_10px_30px_rgba(239,68,68,0.3)] transform hover:-translate-y-0.5 transition-all flex items-center gap-2 group shadow-lg">
+                                    <LogIn className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                                    Login
+                                </Link>
+                            )}
+                        </div>
+
+                        {/* Mobile Menu Toggle */}
+                        <button 
+                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                            className="md:hidden p-3 rounded-2xl glass-btn text-[var(--text-secondary)] hover:text-orange-500 transition-all"
+                            aria-label="Toggle menu"
+                        >
+                            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                        </button>
+                    </div>
+                </div>
+
+                {/* Mobile Menu Overlay */}
+                <div className={`md:hidden overflow-hidden transition-all duration-500 ease-in-out ${mobileMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}`}>
+                    <div className="px-6 py-8 flex flex-col gap-6 border-t border-[var(--border-color)]">
+                        <div className="flex flex-col gap-4">
+                            <Link to="/mission" className={`text-sm font-black uppercase tracking-[0.2em] transition-colors ${pathname === '/mission' ? 'text-orange-500' : 'text-[var(--text-secondary)] hover:text-orange-400'}`}>Mission</Link>
+                            <Link to="/directory" className={`text-sm font-black uppercase tracking-[0.2em] transition-colors ${pathname === '/directory' ? 'text-amber-500' : 'text-[var(--text-secondary)] hover:text-amber-500'}`}>Directory</Link>
+                            <Link to="/impact" className={`text-sm font-black uppercase tracking-[0.2em] transition-colors ${pathname === '/impact' ? 'text-red-400' : 'text-[var(--text-secondary)] hover:text-red-400'}`}>Impact</Link>
+                        </div>
+                        
+                        <div className="flex items-center gap-4 pt-4 border-t border-[var(--border-color)]">
+                            <button onClick={toggleTheme} className="flex-1 p-4 rounded-2xl glass-btn flex items-center justify-center gap-3 text-sm font-bold text-[var(--text-secondary)]">
+                                {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                                {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+                            </button>
+                            <button onClick={handleShare} className="p-4 rounded-2xl glass-btn text-[var(--text-secondary)]">
+                                <Share2 className="w-4 h-4" />
+                            </button>
+                        </div>
+
+                        <div className="pt-2">
+                            {user ? (
+                                <div className="flex flex-col gap-4">
+                                    <div className="px-6 py-4 rounded-2xl bg-orange-500/10 border border-orange-500/20 text-orange-500 text-xs font-black uppercase tracking-widest text-center">
+                                        Hi, {user.displayName || 'Partner'}
+                                    </div>
+                                    <div className="flex gap-3">
+                                        {user.isAdmin && (
+                                            <Link to="/admin" className="flex-1 py-4 rounded-2xl bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-primary)] font-black text-xs uppercase tracking-widest text-center">
+                                                Dashboard
+                                            </Link>
+                                        )}
+                                        <button onClick={logout} className="flex-1 py-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2">
+                                            <LogOut className="w-4 h-4" /> Sign Out
+                                        </button>
+                                    </div>
+                                </div>
+                            ) : (
+                                <Link to="/login" className="w-full py-5 rounded-2xl bg-gradient-to-r from-orange-600 to-red-600 text-white font-black text-xs uppercase tracking-widest text-center block shadow-xl">
+                                    Member Login
+                                </Link>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>

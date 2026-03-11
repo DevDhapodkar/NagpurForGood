@@ -34,7 +34,7 @@
         ],
         "impactStats": [
             {
-                "label": "Monthly Langar",
+                "label": "Monthly Langar Meals",
                 "value": "127,600+",
                 "sourceUrl": "https://www.chalokhushiyanbatein.in/index.html"
             },
@@ -51,6 +51,11 @@
             {
                 "label": "Total Lives Impacted",
                 "value": "198,918+",
+                "sourceUrl": "https://www.chalokhushiyanbatein.in/index.html"
+            },
+            {
+                "label": "Trees Planted & Protected",
+                "value": "12,500+",
                 "sourceUrl": "https://www.chalokhushiyanbatein.in/index.html"
             }
         ],

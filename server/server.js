@@ -31,6 +31,7 @@ connectDB();
 // Define Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/ngos', require('./routes/ngos'));
+app.use('/api/donations', require('./routes/donations'));
 
 const PORT = process.env.PORT || 5000;
 

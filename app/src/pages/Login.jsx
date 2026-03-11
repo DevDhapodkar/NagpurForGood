@@ -44,14 +44,14 @@ const Login = () => {
                 {/* Header */}
                 <div className="text-center mb-10 text-theme-primary h-[8rem] flex flex-col items-center">
                     <img src="/logo.png" alt="Logo" className="h-20 w-auto object-contain drop-shadow-md mb-4"/>
-                    <h1 className="text-3xl font-black font-serif tracking-tight">Admin Portal</h1>
+                    <h1 className="text-3xl font-black font-serif tracking-tight">Impact Portal</h1>
                     <p className="text-xs uppercase tracking-[0.2em] font-black text-theme-primary/40 mt-1">Authentic Impact Hub</p>
                 </div>
 
                 {/* Glassmorphism Card */}
                 <div className="glass-panel p-8 sm:p-10 rounded-[2.5rem] shadow-2xl relative overflow-hidden backdrop-blur-xl">
                     <div className="absolute top-0 right-0 -mr-20 -mt-20 w-40 h-40 bg-orange-500/20 rounded-full blur-3xl pointer-events-none"></div>
-                    <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-40 h-40 bg-blue-500/20 rounded-full blur-3xl pointer-events-none"></div>
+                    <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-40 h-40 bg-red-500/20 rounded-full blur-3xl pointer-events-none"></div>
 
                     <h2 className="text-xl font-black text-[var(--text-primary)] mb-6 text-center">Sign in to Continue</h2>
 
@@ -72,7 +72,7 @@ const Login = () => {
                                     type="email"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="Admin Email"
+                                    placeholder="Member Email"
                                     className="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-primary)] rounded-2xl pl-12 pr-4 py-4 text-sm focus:outline-none focus:border-orange-500/50 focus:ring-1 focus:ring-orange-500/50 transition-all placeholder:text-[var(--text-muted)]"
                                     disabled={isSubmitting}
                                 />

@@ -30,9 +30,9 @@ export const ToastProvider = ({ children }) => {
                     <div 
                         key={toast.id}
                         className={`pointer-events-auto flex items-center gap-3 px-4 py-3 rounded-2xl shadow-lg border backdrop-blur-xl animate-in slide-in-from-bottom-5 fade-in duration-300
-                            ${toast.type === 'success' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400' :
+                            ${toast.type === 'success' ? 'bg-amber-500/10 border-amber-500/20 text-amber-500' :
                               toast.type === 'error' ? 'bg-red-500/10 border-red-500/20 text-red-400' :
-                              'bg-blue-500/10 border-blue-500/20 text-blue-400'}`}
+                              'bg-orange-500/10 border-orange-500/20 text-orange-400'}`}
                     >
                         {toast.type === 'success' && <CheckCircle2 className="w-5 h-5" />}
                         {toast.type === 'error' && <AlertCircle className="w-5 h-5" />}

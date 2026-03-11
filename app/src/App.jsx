@@ -6,6 +6,9 @@ import NGODetails from './pages/NGODetails';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import AdminDashboard from './pages/AdminDashboard';
+import Mission from './pages/Mission';
+import Directory from './pages/Directory';
+import Impact from './pages/Impact';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
 import { NGOProvider } from './context/NGOContext';
@@ -13,7 +16,7 @@ import { ToastProvider } from './context/ToastContext';
 
 function App() {
     const [theme, setTheme] = React.useState(() => {
-        return localStorage.getItem('theme') || 'dark';
+        return localStorage.getItem('theme') || 'light';
     });
 
     React.useEffect(() => {
@@ -41,6 +44,9 @@ function App() {
                         <Routes>
                             <Route path="/" element={<Home />} />
                             <Route path="/ngo/:id" element={<NGODetails />} />
+                            <Route path="/mission" element={<Mission />} />
+                            <Route path="/directory" element={<Directory />} />
+                            <Route path="/impact" element={<Impact />} />
                             <Route path="/login" element={<Login />} />
                             <Route path="/signup" element={<Signup />} />
                             <Route 

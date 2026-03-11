@@ -8,6 +8,7 @@ import {
 import { useNGOs } from '../context/NGOContext';
 import { getCertConfig } from '../constants/certifications';
 import { calculateTrustScore } from '../utils/trustScore';
+import DonationForm from '../components/DonationForm';
 
 const NGODetails = () => {
     const { id } = useParams();
@@ -80,13 +81,13 @@ const NGODetails = () => {
                         {ngo.leadership && (
                             <section className="glass-panel p-8 sm:p-10 rounded-[2.5rem] animate-in slide-in-from-bottom-4 duration-700">
                                 <div className="flex items-center gap-3 mb-10">
-                                    <span className="w-10 h-1 bg-blue-500 rounded-full"></span>
-                                    <h2 className="text-xs font-black uppercase tracking-[0.3em] text-blue-400">Team & Leadership</h2>
+                                    <span className="w-10 h-1 bg-red-500 rounded-full"></span>
+                                    <h2 className="text-xs font-black uppercase tracking-[0.3em] text-red-400">Team & Leadership</h2>
                                 </div>
                                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-6">
                                     {ngo.leadership.map((lead, idx) => (
                                         <div key={idx} className="bg-theme-primary/5 p-6 rounded-2xl border border-theme-primary/5 hover:bg-theme-primary/10 transition-all text-center group/team">
-                                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-amber-600 mx-auto flex items-center justify-center text-sm font-black text-white mb-4 shadow-lg group-hover/team:scale-110 transition-transform">
+                                            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-600 to-amber-600 mx-auto flex items-center justify-center text-sm font-black text-white mb-4 shadow-lg group-hover/team:scale-110 transition-transform">
                                                 {lead.name.split(' ').map(n => n[0]).join('')}
                                             </div>
                                             <h4 className="text-sm font-black text-theme-primary line-clamp-1">{lead.name}</h4>
@@ -140,8 +141,8 @@ const NGODetails = () => {
                         {/* Impact Timeline */}
                         <section className="glass-panel p-8 sm:p-10 rounded-[2.5rem]">
                             <div className="flex items-center gap-3 mb-10">
-                                <span className="w-10 h-1 bg-emerald-500 rounded-full"></span>
-                                <h2 className="text-xs font-black uppercase tracking-[0.3em] text-emerald-400">Official Milestones & Drives</h2>
+                                <span className="w-10 h-1 bg-amber-500 rounded-full"></span>
+                                <h2 className="text-xs font-black uppercase tracking-[0.3em] text-amber-500">Official Milestones & Drives</h2>
                             </div>
                             <div className="space-y-12 relative before:absolute before:inset-0 before:left-[11px] before:w-[2px] before:bg-theme-primary/5">
                                 {ngo.recentActivities.map((activity, idx) => (
@@ -152,17 +153,17 @@ const NGODetails = () => {
                                         rel="noopener noreferrer"
                                         className="relative pl-12 block group/milestone transition-all hover:translate-x-2"
                                     >
-                                        <div className="absolute left-0 top-1 w-6 h-6 rounded-full bg-[#09090b] border-4 border-emerald-500/50 flex items-center justify-center transition-colors group-hover/milestone:border-emerald-400">
-                                            <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                                        <div className="absolute left-0 top-1 w-6 h-6 rounded-full bg-[var(--bg-primary)] border-4 border-amber-500/50 flex items-center justify-center transition-colors group-hover/milestone:border-amber-400">
+                                            <div className="w-2 h-2 rounded-full bg-amber-500"></div>
                                         </div>
                                         <div>
                                             <div className="flex items-center gap-2 mb-2">
-                                                <span className="text-[10px] font-black text-emerald-400/70 border border-emerald-400/20 px-2 py-1 rounded-md uppercase tracking-wider">
+                                                <span className="text-[10px] font-black text-amber-500/70 border border-amber-500/20 px-2 py-1 rounded-md uppercase tracking-wider">
                                                     {activity.date}
                                                 </span>
-                                                <ExternalLink className="w-3 h-3 text-theme-primary/20 group-hover/milestone:text-emerald-400 transition-colors" />
+                                                <ExternalLink className="w-3 h-3 text-theme-primary/20 group-hover/milestone:text-amber-500 transition-colors" />
                                             </div>
-                                            <h4 className="text-xl font-bold text-theme-primary mb-2 group-hover/milestone:text-emerald-400 transition-colors">{activity.title}</h4>
+                                            <h4 className="text-xl font-bold text-theme-primary mb-2 group-hover/milestone:text-amber-500 transition-colors">{activity.title}</h4>
                                             <p className="text-theme-primary/40 text-sm leading-relaxed">{activity.description}</p>
                                         </div>
                                     </a>
@@ -208,9 +209,9 @@ const NGODetails = () => {
                                         <div className="flex items-center justify-between mb-4">
                                             <h4 className="text-[10px] uppercase tracking-widest text-theme-primary/40 font-black">Confidence Meter</h4>
                                             <div className={`px-3 py-1 rounded-lg border flex items-center gap-1.5 ${
-                                                trustScore.score >= 80 ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' :
+                                                trustScore.score >= 80 ? 'bg-amber-500/10 border-amber-500/20 text-amber-500' :
                                                 trustScore.score >= 50 ? 'bg-amber-500/10 border-amber-500/20 text-amber-500' :
-                                                'bg-blue-500/10 border-blue-500/20 text-blue-500'
+                                                'bg-red-500/10 border-red-500/20 text-red-500'
                                             }`}>
                                                 <ShieldCheck className="w-3 h-3" />
                                                 <span className="font-black text-xs">{trustScore.score}% Score</span>
@@ -223,9 +224,9 @@ const NGODetails = () => {
                                         <div className="w-full h-2 bg-theme-primary/10 rounded-full overflow-hidden">
                                             <div 
                                                 className={`h-full rounded-full transition-all duration-1000 ${
-                                                    trustScore.score >= 80 ? 'bg-emerald-500' :
+                                                    trustScore.score >= 80 ? 'bg-amber-500' :
                                                     trustScore.score >= 50 ? 'bg-amber-500' :
-                                                    'bg-blue-500'
+                                                    'bg-red-500'
                                                 }`}
                                                 style={{ width: `${trustScore.score}%` }}
                                             />
@@ -244,7 +245,7 @@ const NGODetails = () => {
                                                     {trustScore.breakdown.map((item, idx) => (
                                                         <div key={idx} className="flex items-center justify-between py-2 border-b border-zinc-800/50 last:border-0">
                                                             <span className="text-xs text-zinc-400 font-medium">{item.label}</span>
-                                                            <span className="text-xs font-black text-emerald-400">+{item.points}</span>
+                                                            <span className="text-xs font-black text-amber-500">+{item.points}</span>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -316,22 +317,11 @@ const NGODetails = () => {
             {showDonation && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center p-6 backdrop-blur-md animate-in fade-in duration-300">
                     <div className="absolute inset-0 bg-black/80" onClick={() => setShowDonation(false)} />
-                    <div className="relative w-full max-w-sm glass-panel p-10 rounded-[3rem] text-center space-y-8 animate-in zoom-in-95 duration-300">
-                        <div className="inline-flex p-4 rounded-[2rem] bg-amber-500/10 text-red-400">
-                            <Heart className="w-12 h-12" />
-                        </div>
-                        <div>
-                            <h3 className="text-2xl font-black text-theme-primary uppercase tracking-tight">Direct Donation</h3>
-                            <p className="text-theme-primary/50 text-sm mt-2">100% of your gift goes via official UPI directly to the NGO bank account.</p>
-                        </div>
-                        <div className="bg-white p-6 rounded-[2rem] inline-block">
-                            <img src={`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=${ngo.mockUPI}&pn=${encodeURIComponent(ngo.name)}`} alt="UPI QR" className="w-48 h-48 rounded-xl" />
-                        </div>
-                        <div className="pt-4">
-                            <span className="text-[10px] uppercase font-black text-theme-primary/20 tracking-widest block mb-2">Merchant VPA</span>
-                            <span className="bg-theme-primary/5 px-4 py-2 rounded-xl text-theme-primary font-mono text-sm tracking-wider border border-theme-primary/10">{ngo.mockUPI}</span>
-                        </div>
-                        <button onClick={() => setShowDonation(false)} className="w-full text-theme-primary/30 uppercase text-[10px] font-black tracking-widest hover:text-theme-primary transition-colors">Close Portal</button>
+                    <div className="relative w-full max-w-2xl glass-panel p-10 rounded-[3rem] animate-in zoom-in-95 duration-300">
+                        <DonationForm 
+                            ngoName={ngo.name} 
+                            onBack={() => setShowDonation(false)} 
+                        />
                     </div>
                 </div>
             )}

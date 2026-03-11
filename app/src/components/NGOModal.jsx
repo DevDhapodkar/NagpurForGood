@@ -3,6 +3,7 @@ import { X, Phone, MapPin, Globe, Instagram, Facebook, Twitter, Youtube, Mail, A
 
 import { getCertConfig } from '../constants/certifications';
 import { calculateTrustScore } from '../utils/trustScore';
+import DonationForm from './DonationForm';
 
 const NGOModal = ({ ngo, onClose }) => {
     const [showDonation, setShowDonation] = useState(false);
@@ -96,9 +97,9 @@ const NGOModal = ({ ngo, onClose }) => {
                                 <div className="flex items-center justify-between mb-6">
                                     <h4 className="text-[10px] uppercase tracking-[0.3em] text-[var(--text-muted)] font-black">Trust & Transparency</h4>
                                     <div className={`px-4 py-1.5 rounded-xl border flex items-center gap-2 ${
-                                        trustScore.score >= 80 ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' :
+                                        trustScore.score >= 80 ? 'bg-amber-500/10 border-amber-500/20 text-amber-500' :
                                         trustScore.score >= 50 ? 'bg-amber-500/10 border-amber-500/20 text-amber-500' :
-                                        'bg-blue-500/10 border-blue-500/20 text-blue-500'
+                                        'bg-red-500/10 border-red-500/20 text-red-500'
                                     }`}>
                                         <ShieldCheck className="w-4 h-4" />
                                         <span className="font-black text-sm">{trustScore.score}% Score</span>
@@ -126,7 +127,7 @@ const NGOModal = ({ ngo, onClose }) => {
                                                     {trustScore.breakdown.map((item, idx) => (
                                                         <div key={idx} className="flex items-center justify-between py-2 border-b border-zinc-800/50 last:border-0">
                                                             <span className="text-sm text-zinc-300 font-medium">{item.label}</span>
-                                                            <span className="text-sm font-black text-emerald-400">+{item.points}</span>
+                                                            <span className="text-sm font-black text-amber-500">+{item.points}</span>
                                                         </div>
                                                     ))}
                                                 </div>
@@ -203,11 +204,11 @@ const NGOModal = ({ ngo, onClose }) => {
                                             <span className="text-sm font-medium">{ngo.contact}</span>
                                         </div>
                                         <div className="flex items-center gap-3 text-[var(--text-primary)]">
-                                            <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400"><Mail className="w-4 h-4" /></div>
+                                            <div className="p-2 rounded-lg bg-orange-500/10 text-orange-500"><Mail className="w-4 h-4" /></div>
                                             <span className="text-sm font-medium">{ngo.socialLinks?.email || 'contact@nagpurgoodorganisation.org'}</span>
                                         </div>
                                         <div className="flex items-center gap-3 text-[var(--text-primary)]">
-                                            <div className="p-2 rounded-lg bg-blue-500/10 text-blue-400"><MapPin className="w-4 h-4 shrink-0" /></div>
+                                            <div className="p-2 rounded-lg bg-orange-500/10 text-orange-400"><MapPin className="w-4 h-4 shrink-0" /></div>
                                             <span className="text-sm font-medium truncate">{ngo.address}</span>
                                         </div>
                                     </div>
@@ -235,45 +236,10 @@ const NGOModal = ({ ngo, onClose }) => {
                         </div>
                     ) : (
                         /* Donation View */
-                        <div className="flex flex-col items-center justify-center py-12 space-y-10 animate-in slide-in-from-right-12 duration-500">
-                            <div className="text-center">
-                                <div className="inline-flex p-3 rounded-2xl bg-orange-600/10 text-orange-400 mb-6 border border-orange-500/20">
-                                    <Heart className="w-10 h-10" />
-                                </div>
-                                <h3 className="text-4xl font-black text-[var(--text-primary)] mb-3">Support {ngo.name}</h3>
-                                <p className="text-[var(--text-secondary)] text-lg max-w-sm mx-auto">100% of your donation goes directly to {ngo.name} via official UPI.</p>
-                            </div>
-
-                            <div className="p-8 bg-white rounded-[2rem] shadow-2xl relative group">
-                                <img
-                                    src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=upi://pay?pa=${ngo.mockUPI}&pn=${encodeURIComponent(ngo.name)}`}
-                                    alt="UPI QR Code"
-                                    className="w-56 h-56 sm:w-64 sm:h-64 rounded-xl pointer-events-none"
-                                />
-                                <div className="absolute inset-0 bg-theme-primary/60 rounded-[2rem] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all backdrop-blur-[4px] cursor-not-allowed">
-                                    <div className="text-white bg-zinc-950 px-6 py-4 rounded-2xl font-black text-lg shadow-2xl rotate-[-5deg] border-2 border-red-500">VERIFIED FLOW</div>
-                                </div>
-                            </div>
-
-                            <div className="w-full max-w-sm flex flex-col gap-4">
-                                <div className="glass-panel p-5 rounded-2xl flex items-center justify-between border border-[var(--border-color)]">
-                                    <div className="flex flex-col">
-                                        <span className="text-[10px] uppercase font-black text-[var(--text-muted)] tracking-widest">Merchant VPA</span>
-                                        <span className="text-lg text-[var(--text-primary)] font-mono font-black">{ngo.mockUPI}</span>
-                                    </div>
-                                    <button onClick={() => navigator.clipboard.writeText(ngo.mockUPI)} className="p-3 rounded-xl glass-btn text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
-                                        <Award className="w-5 h-5" />
-                                    </button>
-                                </div>
-
-                                <button
-                                    onClick={() => setShowDonation(false)}
-                                    className="py-5 w-full rounded-2xl font-black glass-btn text-xs uppercase tracking-widest transition-all"
-                                >
-                                    Back to NGO Profile
-                                </button>
-                            </div>
-                        </div>
+                        <DonationForm 
+                            ngoName={ngo.name} 
+                            onBack={() => setShowDonation(false)} 
+                        />
                     )}
                 </div>
             </div>
