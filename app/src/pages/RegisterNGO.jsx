@@ -264,7 +264,7 @@ const RegisterNGO = () => {
             // ── Step 2: Contact ─────────────────────────────────────────
             case 2: return (
                 <div className="space-y-6">
-                    <SectionHeader icon={Phone} title="Contact & Location" subtitle="Official contact details for NagpurGood verification." />
+                    <SectionHeader icon={Phone} title="Contact & Location" subtitle="Official contact details for NagpurGoodOrg verification." />
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <InputField label="Chairperson / President" icon={User} required
                             placeholder="Full Name"
@@ -494,7 +494,7 @@ const RegisterNGO = () => {
             // ── Step 10: Review ──────────────────────────────────────────
             case 10: return (
                 <div className="space-y-6 pb-6">
-                    <SectionHeader icon={CheckCircle} title="Final Application Review" subtitle="Verify all details. Once submitted, our PR team will review your application for NagpurGood listing." />
+                    <SectionHeader icon={CheckCircle} title="Final Application Review" subtitle="Verify all details. Once submitted, our PR team will review your application for NagpurGoodOrg listing." />
                     <div className="glass-panel rounded-3xl overflow-hidden border-orange-500/20 bg-orange-500/5 p-8">
                         <div className="flex items-center gap-6 mb-8">
                             <div className="w-20 h-20 rounded-3xl bg-white/10 overflow-hidden border border-white/20 shadow-xl">
@@ -521,7 +521,7 @@ const RegisterNGO = () => {
 
                     <div className="p-5 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex gap-4 items-start">
                         <Shield className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
-                        <p className="text-xs text-amber-600 font-medium">By submitting, you declare that all information provided is accurate and you authorize the NagpurGood team to display this data in the public directory upon verification.</p>
+                        <p className="text-xs text-amber-600 font-medium">By submitting, you declare that all information provided is accurate and you authorize the NagpurGoodOrg team to display this data in the public directory upon verification.</p>
                     </div>
                 </div>
             );

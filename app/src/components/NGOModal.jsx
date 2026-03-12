@@ -205,7 +205,7 @@ const NGOModal = ({ ngo, onClose }) => {
                                         </div>
                                         <div className="flex items-center gap-3 text-[var(--text-primary)]">
                                             <div className="p-2 rounded-lg bg-orange-500/10 text-orange-500"><Mail className="w-4 h-4" /></div>
-                                            <span className="text-sm font-medium">{ngo.socialLinks?.email || 'contact@nagpurgoodorganisation.org'}</span>
+                                            <span className="text-sm font-medium">{ngo.socialLinks?.email || 'contact@nagpurgoodorg.org'}</span>
                                         </div>
                                         <div className="flex items-center gap-3 text-[var(--text-primary)]">
                                             <div className="p-2 rounded-lg bg-orange-500/10 text-orange-400"><MapPin className="w-4 h-4 shrink-0" /></div>

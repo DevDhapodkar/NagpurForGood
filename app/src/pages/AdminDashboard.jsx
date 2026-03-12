@@ -494,7 +494,7 @@ const AdminDashboard = () => {
                                     </div>
                                     <div>
                                         <h2 className="text-xl font-black font-serif">NGO Registration Applications</h2>
-                                        <p className="text-[var(--text-secondary)] text-sm mt-0.5">Review submissions from organizations wanting to join NagpurGood.</p>
+                                        <p className="text-[var(--text-secondary)] text-sm mt-0.5">Review submissions from organizations wanting to join NagpurGoodOrg.</p>
                                     </div>
                                 </div>
                             </div>

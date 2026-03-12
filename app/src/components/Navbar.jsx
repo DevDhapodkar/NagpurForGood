@@ -28,7 +28,7 @@ const Navbar = ({ theme, toggleTheme }) => {
         try {
             if (navigator.share) {
                 await navigator.share({
-                    title: 'Nagpur Good Organisation',
+                title: 'NagpurGoodOrg',
                     text: 'Discover and support verified NGOs in Nagpur.',
                     url: window.location.href,
                 });
@@ -54,7 +54,7 @@ const Navbar = ({ theme, toggleTheme }) => {
                             <img src="/logo.png" alt="NGO Logo" className="w-10 h-10 sm:w-12 sm:h-12 object-contain relative z-10 drop-shadow-lg group-hover:scale-110 transition-transform duration-500 origin-center" />
                         </div>
                         <div className="flex flex-col">
-                            <span className="font-black text-lg sm:text-xl tracking-tight text-[var(--text-primary)] font-serif leading-none group-hover:text-orange-500 transition-colors">Nagpur<span className="text-[var(--text-secondary)] font-sans font-bold">Good</span></span>
+                            <span className="font-black text-lg sm:text-xl tracking-tight text-[var(--text-primary)] font-serif leading-none group-hover:text-orange-500 transition-colors">Nagpur<span className="text-[var(--text-secondary)] font-sans font-bold">GoodOrg</span></span>
                             <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.2em] font-black text-orange-500/80 mt-1">Verified Organizations</span>
                         </div>
                     </Link>

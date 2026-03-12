@@ -12,8 +12,15 @@ const Signup = () => {
     const [error, setError] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     
-    const { signup } = useAuth();
+    const { signup, user } = useAuth();
     const navigate = useNavigate();
+
+    // Redirect away if already logged in
+    React.useEffect(() => {
+        if (user) {
+            navigate('/', { replace: true });
+        }
+    }, [user, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -38,7 +45,7 @@ const Signup = () => {
 
         try {
             await signup(name, email, password);
-            navigate('/admin', { replace: true });
+            navigate('/', { replace: true });
         } catch (err) {
             setError(err.message || 'Failed to create account.');
         } finally {

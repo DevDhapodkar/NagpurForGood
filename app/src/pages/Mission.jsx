@@ -17,7 +17,7 @@ const Mission = () => {
                         <span className="text-gradient">Authentic Impact.</span>
                     </h1>
                     <p className="text-xl text-theme-primary/60 max-w-3xl mx-auto leading-relaxed">
-                        Nagpur Good Organisation is not just a directory; it's a verification standard. We bridge the gap between people who want to help and NGOs that actually deliver.
+                        NagpurGoodOrg is not just a directory; it's a verification standard. We bridge the gap between people who want to help and NGOs that actually deliver.
                     </p>
                 </div>
 

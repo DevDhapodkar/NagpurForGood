@@ -67,9 +67,9 @@ function App() {
                     <footer className="relative z-10 w-full border-t border-theme-primary/10 glass-panel mt-auto py-16 px-6">
                     <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
                         <div className="flex items-center gap-4">
-                            <img src="/logo.png" alt="Nagpur Good Organisation Logo" className="h-16 sm:h-20 w-auto object-contain drop-shadow-md scale-125 origin-left" />
+                            <img src="/logo.png" alt="NagpurGoodOrg Logo" className="h-16 sm:h-20 w-auto object-contain drop-shadow-md scale-125 origin-left" />
                             <div>
-                                <div className="text-xl font-black text-theme-primary tracking-tighter font-serif">Nagpur Good Organisation</div>
+                                <div className="text-xl font-black text-theme-primary tracking-tighter font-serif">NagpurGoodOrg</div>
                                 <div className="text-[10px] uppercase tracking-widest text-theme-primary/40 font-black mt-[-2px]">Authentic Impact Hub</div>
                             </div>
                         </div>

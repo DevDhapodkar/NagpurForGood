@@ -9,12 +9,19 @@ const Login = () => {
     const [error, setError] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     
-    const { login } = useAuth();
+    const { login, user } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
     
     // Check if we were redirected from a protected route
-    const from = location.state?.from?.pathname || '/admin';
+    const from = location.state?.from?.pathname || '/';
+
+    // Redirect away if already logged in
+    React.useEffect(() => {
+        if (user) {
+            navigate(from, { replace: true });
+        }
+    }, [user, navigate, from]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
