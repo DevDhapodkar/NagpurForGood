@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { Heart, User, Phone, Mail, Package, MessageSquare, CheckCircle, ArrowRight } from 'lucide-react';
+import { Heart, User, Phone, Package, MessageSquare, CheckCircle, ArrowRight } from 'lucide-react';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { db } from '../utils/firebase';
 
-const DonationForm = ({ ngoName, onBack }) => {
+const DonationForm = ({ ngoName, upiId, onBack }) => {
     const [status, setStatus] = useState('idle'); // idle, submitting, success
     const [formData, setFormData] = useState({
         name: '',
@@ -16,22 +18,13 @@ const DonationForm = ({ ngoName, onBack }) => {
         setStatus('submitting');
         
         try {
-            const response = await fetch('/api/donations', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    ngoName,
-                    ...formData
-                }),
+            await addDoc(collection(db, 'donations'), {
+                ngoName,
+                ...formData,
+                status: 'pending',
+                createdAt: serverTimestamp(),
             });
-
-            if (response.ok) {
-                setStatus('success');
-            } else {
-                throw new Error('Failed to submit donation');
-            }
+            setStatus('success');
         } catch (error) {
             console.error('Error submitting donation:', error);
             alert('Something went wrong. Please try again.');
@@ -65,8 +58,48 @@ const DonationForm = ({ ngoName, onBack }) => {
                 <div className="inline-flex p-3 rounded-2xl bg-orange-600/10 text-orange-400 mb-6 border border-orange-500/20">
                     <Heart className="w-8 h-8" />
                 </div>
-                <h3 className="text-3xl font-black text-[var(--text-primary)] mb-2">Donate to {ngoName}</h3>
-                <p className="text-[var(--text-secondary)]">Fill the form below to contribute clothes, food, or other essentials.</p>
+                <h3 className="text-3xl font-black text-[var(--text-primary)] mb-2">Support {ngoName}</h3>
+                <p className="text-[var(--text-secondary)]">Choose how you would like to contribute.</p>
+            </div>
+
+            {upiId && (
+                <div className="glass-panel p-6 rounded-3xl bg-orange-500/5 border border-orange-500/20 border-dashed animate-in slide-in-from-top-4 duration-500">
+                    <div className="flex flex-col sm:flex-row items-center gap-6">
+                        <div className="w-32 h-32 bg-white rounded-2xl p-2 shadow-2xl shrink-0 flex items-center justify-center border-4 border-orange-500/10 group overflow-hidden">
+                            <div className="w-full h-full border-2 border-dashed border-orange-500/30 rounded-lg flex flex-col items-center justify-center text-orange-400 group-hover:bg-orange-50 transition-colors">
+                                <Package className="w-8 h-8 mb-1 opacity-20" />
+                                <span className="text-[8px] font-black uppercase tracking-tighter">Scan to Pay</span>
+                            </div>
+                        </div>
+                        <div className="flex-1 text-center sm:text-left space-y-3">
+                            <div>
+                                <h4 className="text-sm font-black text-[var(--text-primary)] uppercase tracking-widest underline decoration-orange-500/30 underline-offset-4 decoration-2">Direct UPI Donation</h4>
+                                <p className="text-xs text-[var(--text-secondary)] mt-1">Instant financial aid goes directly to their bank account.</p>
+                            </div>
+                            <div className="flex items-center gap-2 bg-[var(--bg-primary)] p-3 rounded-xl border border-[var(--border-color)] group/copy">
+                                <code className="text-orange-500 font-black tracking-widest text-xs flex-1 truncate">{upiId}</code>
+                                <button 
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(upiId);
+                                        alert('UPI ID Copied!');
+                                    }}
+                                    className="p-1 px-3 bg-orange-500/10 text-orange-500 text-[10px] font-black uppercase rounded-lg hover:bg-orange-500 hover:text-white transition-all"
+                                >
+                                    Copy
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            <div className="relative">
+                <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                    <div className="w-full border-t border-[var(--border-color)]"></div>
+                </div>
+                <div className="relative flex justify-center text-xs uppercase font-black tracking-[0.3em] text-[var(--text-muted)]">
+                    <span className="bg-[var(--bg-secondary)] px-6">Or Report Item Donation</span>
+                </div>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">

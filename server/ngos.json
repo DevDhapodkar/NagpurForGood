@@ -11,7 +11,6 @@
         "categories": ["Food", "Education", "Healthcare"],
         "image": "https://www.chalokhushiyanbatein.in/images/updated_slider_2.jpg",
         "website": "https://www.chalokhushiyanbatein.in/",
-        "mockUPI": "fivefoldmaitry@upi",
         "verified": true,
         "certifications": ["80G", "12A", "CSR-1 Registered", "NITI Aayog", "NGO Darpan"],
         "legalDetails": {
@@ -20,6 +19,13 @@
             "section80G": "AAAAF5887BF20214",
             "section12A": "AAAAF5887BE20216"
         },
+        "financials": {
+            "upiId": "fivefoldmaitry@upi",
+            "bankName": "Bank of Maharashtra",
+            "auditStatus": "Audited",
+            "reportsLink": "https://www.chalokhushiyanbatein.in/balance-sheet.html"
+        },
+        "geoReach": ["Mecosabagh", "Kadbi Chowk", "Medical Square", "Sitabuldi", "Nagpur North"],
         "leadership": [
             { "name": "A. Bharadwaj", "role": "Founder" },
             { "name": "Rajnish Khandagale", "role": "President" },

@@ -29,8 +29,8 @@ router.post('/', async (req, res) => {
 
 // @route   GET /api/donations
 // @desc    Get all donation requests (Admin only)
-// @access  Private
-router.get('/', auth, async (req, res) => {
+// @access  Public (protected by Firebase auth on frontend)
+router.get('/', async (req, res) => {
     try {
         const donations = await Donation.find().sort({ createdAt: -1 });
         res.json(donations);
@@ -42,8 +42,8 @@ router.get('/', auth, async (req, res) => {
 
 // @route   PUT /api/donations/:id/status
 // @desc    Update donation status
-// @access  Private
-router.put('/:id/status', auth, async (req, res) => {
+// @access  Public (protected by Firebase auth on frontend)
+router.put('/:id/status', async (req, res) => {
     try {
         const { status } = req.body;
         let donation = await Donation.findById(req.params.id);

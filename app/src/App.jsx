@@ -9,6 +9,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import Mission from './pages/Mission';
 import Directory from './pages/Directory';
 import Impact from './pages/Impact';
+import RegisterNGO from './pages/RegisterNGO';
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
 import { NGOProvider } from './context/NGOContext';
@@ -49,6 +50,8 @@ function App() {
                             <Route path="/impact" element={<Impact />} />
                             <Route path="/login" element={<Login />} />
                             <Route path="/signup" element={<Signup />} />
+                            <Route path="/register-ngo" element={<RegisterNGO />} />
+                            <Route path="/apply" element={<RegisterNGO />} />
                             <Route 
                                 path="/admin" 
                                 element={

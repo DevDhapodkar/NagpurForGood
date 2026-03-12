@@ -90,7 +90,7 @@ const NGODetails = () => {
                                             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-red-600 to-amber-600 mx-auto flex items-center justify-center text-sm font-black text-white mb-4 shadow-lg group-hover/team:scale-110 transition-transform">
                                                 {lead.name.split(' ').map(n => n[0]).join('')}
                                             </div>
-                                            <h4 className="text-sm font-black text-theme-primary line-clamp-1">{lead.name}</h4>
+                                            <h4 className="text-sm font-black text-theme-primary">{lead.name}</h4>
                                             <p className="text-[10px] uppercase font-black text-theme-primary/30 tracking-widest mt-1">{lead.role}</p>
                                         </div>
                                     ))}
@@ -170,6 +170,26 @@ const NGODetails = () => {
                                 ))}
                             </div>
                         </section>
+
+                        {/* Geographic Focus (Nagpur Areas) */}
+                        {ngo.geoReach && ngo.geoReach.length > 0 && (
+                            <section className="glass-panel p-8 sm:p-10 rounded-[2.5rem]">
+                                <div className="flex items-center gap-3 mb-8">
+                                    <MapPin className="w-5 h-5 text-orange-400" />
+                                    <h2 className="text-xs font-black uppercase tracking-[0.3em] text-orange-400">Geographic Operations</h2>
+                                </div>
+                                <div className="flex flex-wrap gap-3">
+                                    {ngo.geoReach.map((area, idx) => (
+                                        <span key={idx} className="px-5 py-2.5 rounded-2xl bg-orange-500/10 text-orange-500 border border-orange-500/20 text-xs font-black uppercase tracking-widest shadow-sm">
+                                            {area}
+                                        </span>
+                                    ))}
+                                </div>
+                                <p className="mt-6 text-theme-primary/40 text-[10px] font-black uppercase tracking-widest leading-loose">
+                                    Primary focal points for on-ground execution within Nagpur city limits.
+                                </p>
+                            </section>
+                        )}
                     </div>
 
                     {/* Sidebar (Right) */}
@@ -284,6 +304,19 @@ const NGODetails = () => {
                                         </div>
                                     );
                                 })}
+                                {/* Dynamic Legal Badges from Application */}
+                                {ngo.legalDetails?.section80G && (
+                                    <div className="flex items-center gap-3 p-3 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-500 shadow-sm">
+                                        <ShieldCheck className="w-4 h-4" />
+                                        <span className="text-xs font-black uppercase tracking-widest">80G Tax Exempt</span>
+                                    </div>
+                                )}
+                                {ngo.legalDetails?.csr1 && (
+                                    <div className="flex items-center gap-3 p-3 rounded-xl bg-green-500/10 border border-green-500/20 text-green-500 shadow-sm">
+                                        <Award className="w-4 h-4" />
+                                        <span className="text-xs font-black uppercase tracking-widest">CSR-1 Registered</span>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="h-[1px] bg-theme-primary/5 mb-8"></div>
@@ -320,6 +353,7 @@ const NGODetails = () => {
                     <div className="relative w-full max-w-2xl glass-panel p-10 rounded-[3rem] animate-in zoom-in-95 duration-300">
                         <DonationForm 
                             ngoName={ngo.name} 
+                            upiId={ngo.financials?.upiId}
                             onBack={() => setShowDonation(false)} 
                         />
                     </div>

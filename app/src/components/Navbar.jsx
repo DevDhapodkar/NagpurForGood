@@ -43,8 +43,8 @@ const Navbar = ({ theme, toggleTheme }) => {
     };
 
     return (
-        <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out sm:p-6 pb-0 ${scrolled ? 'sm:py-4 py-0' : 'sm:py-8 py-0'}`}>
-            <div className={`mx-auto max-w-7xl transition-all duration-500 ${scrolled ? 'sm:rounded-[2rem] rounded-none sm:shadow-2xl shadow-xl' : 'sm:rounded-[2.5rem] rounded-none'} glass-panel border-b sm:border-b-0 border-[var(--border-color)]`}>
+        <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out sm:p-6 pb-0 ${scrolled || mobileMenuOpen ? 'sm:py-4 py-0' : 'sm:py-8 py-0'}`}>
+            <div className={`mx-auto max-w-7xl transition-all duration-500 ${scrolled || mobileMenuOpen ? 'sm:rounded-[2rem] rounded-none sm:shadow-2xl shadow-xl' : 'sm:rounded-[2.5rem] rounded-none'} glass-panel border-b sm:border-b-0 border-[var(--border-color)] ${mobileMenuOpen ? 'bg-[var(--bg-primary)]/95 backdrop-blur-2xl' : ''}`}>
                 <div className="px-4 sm:px-8 py-4 sm:py-5 flex items-center justify-between">
                     
                     {/* Brand */}
@@ -122,7 +122,7 @@ const Navbar = ({ theme, toggleTheme }) => {
 
                 {/* Mobile Menu Overlay */}
                 <div className={`md:hidden overflow-hidden transition-all duration-500 ease-in-out ${mobileMenuOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'}`}>
-                    <div className="px-6 py-8 flex flex-col gap-6 border-t border-[var(--border-color)]">
+                    <div className="px-6 py-8 flex flex-col gap-6 border-t border-[var(--border-color)] bg-[var(--bg-primary)]/40">
                         <div className="flex flex-col gap-4">
                             <Link to="/mission" className={`text-sm font-black uppercase tracking-[0.2em] transition-colors ${pathname === '/mission' ? 'text-orange-500' : 'text-[var(--text-secondary)] hover:text-orange-400'}`}>Mission</Link>
                             <Link to="/directory" className={`text-sm font-black uppercase tracking-[0.2em] transition-colors ${pathname === '/directory' ? 'text-amber-500' : 'text-[var(--text-secondary)] hover:text-amber-500'}`}>Directory</Link>

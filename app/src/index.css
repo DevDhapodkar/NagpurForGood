@@ -20,7 +20,7 @@
   --text-secondary: rgba(255, 255, 255, 0.6);
   --text-muted: rgba(255, 255, 255, 0.4);
   --border-color: rgba(255, 255, 255, 0.08);
-  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-bg: rgba(255, 255, 255, 0.1);
   --glass-card-bg: rgba(255, 255, 255, 0.02);
   --glass-input-bg: rgba(0, 0, 0, 0.2);
   --gradient-1: rgba(249, 115, 22, 0.4); /* orange */

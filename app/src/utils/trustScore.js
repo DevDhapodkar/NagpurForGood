@@ -10,53 +10,79 @@ export const calculateTrustScore = (ngo) => {
     if (ngo.description || ngo.longDescription) { score += 4; breakdown.push({ label: 'Detailed Mission', points: 4 }); }
     if (ngo.chairperson || ngo.founder) { score += 2; breakdown.push({ label: 'Leadership Info', points: 2 }); }
 
-    // Digital Presence (1 point each)
+    // Legal Compliance (5 points each for key registrations)
+    if (ngo.legalDetails) {
+        let legalPoints = 0;
+        if (ngo.legalDetails.registrationNo) legalPoints += 5;
+        if (ngo.legalDetails.section80G) legalPoints += 5;
+        if (ngo.legalDetails.section12A) legalPoints += 5;
+        if (ngo.legalDetails.csr1) legalPoints += 5;
+        if (legalPoints > 0) {
+            score += legalPoints;
+            breakdown.push({ label: 'High-Value Legal IDs (80G/CSR-1)', points: legalPoints });
+        }
+    }
+
+    // Digital & Social Presence
     if (ngo.website) { score += 3; breakdown.push({ label: 'Official Website', points: 3 }); }
-    if (ngo.socialLinks) {
+    const socials = ngo.socialLinks || ngo.socials;
+    if (socials) {
         let socialPoints = 0;
-        if (ngo.socialLinks.facebook) socialPoints += 1;
-        if (ngo.socialLinks.instagram) socialPoints += 1;
-        if (ngo.socialLinks.youtube) socialPoints += 1;
-        if (ngo.socialLinks.twitter) socialPoints += 1;
+        if (socials.facebook) socialPoints += 1;
+        if (socials.instagram) socialPoints += 1;
+        if (socials.youtube) socialPoints += 1;
+        if (socials.linkedin) socialPoints += 1;
         if (socialPoints > 0) {
             score += socialPoints;
-            breakdown.push({ label: 'Social Media Presence', points: socialPoints });
+            breakdown.push({ label: 'Social Media Sync', points: socialPoints });
         }
+    }
+
+    // Financial Transparency
+    if (ngo.financials) {
+        let finPoints = 0;
+        if (ngo.financials.upiId) finPoints += 5;
+        if (ngo.financials.auditStatus === 'Audited') finPoints += 5;
+        if (ngo.financials.reportsLink) finPoints += 5;
+        if (finPoints > 0) {
+            score += finPoints;
+            breakdown.push({ label: 'Financial Transparency', points: finPoints });
+        }
+    } else if (ngo.mockUPI || ngo.bankDetails) {
+        score += 5;
+        breakdown.push({ label: 'Payment Channel', points: 5 });
+    }
+
+    // Geographic Reach & Impact
+    if (ngo.geoReach && ngo.geoReach.length > 0) {
+        score += 5;
+        breakdown.push({ label: 'Geographic Focus', points: 5 });
+    }
+    if (ngo.impactStats && ngo.impactStats.length > 0) {
+        score += 10;
+        breakdown.push({ label: 'Quantifiable Impact Stats', points: 10 });
+    }
+    if (ngo.programs && ngo.programs.length > 0) {
+        score += 5;
+        breakdown.push({ label: 'Program Portfolio', points: 5 });
     }
 
     // Certifications (5 points each)
     if (ngo.certifications && ngo.certifications.length > 0) {
         const certPoints = ngo.certifications.length * 5;
         score += certPoints;
-        breakdown.push({ label: `${ngo.certifications.length} Certifications`, points: certPoints });
+        breakdown.push({ label: 'Verified Certifications', points: certPoints });
     }
 
     // Verified Status (15 points) -> Significant bump
     if (ngo.verified) { 
         score += 15; 
-        breakdown.push({ label: 'Verified Status', points: 15 }); 
+        breakdown.push({ label: 'Platform Verified', points: 15 }); 
     }
 
-    // Impact & Programs (up to 10 points)
-    if (ngo.impactStats && ngo.impactStats.length > 0) {
-        score += 5;
-        breakdown.push({ label: 'Impact Statistics', points: 5 });
-    }
-    if (ngo.programs && ngo.programs.length > 0) {
-        score += 5;
-        breakdown.push({ label: 'Documented Programs', points: 5 });
-    }
-    
-    // Financial Transparency
-    if (ngo.mockUPI || ngo.bankDetails) {
-        score += 5;
-        breakdown.push({ label: 'Verified Payment Channel', points: 5 });
-    }
-
-    // Optional: Normalize to 100
-    // Currently max points achievable above is approx ~70 depending on certs.
-    // Let's cap at 100 and return a percentage.
-    const normalizedScore = Math.min(Math.round((score / 60) * 100), 100);
+    // Normalize to 100
+    // Estimated max points: ~120
+    const normalizedScore = Math.min(Math.round((score / 100) * 100), 100);
 
     return {
         score: normalizedScore,

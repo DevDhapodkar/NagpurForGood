@@ -19,10 +19,10 @@ const Hero = () => {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-                <button onClick={() => window.scrollTo({ top: document.getElementById('discover').offsetTop - 100, behavior: 'smooth' })} className="px-8 py-4 rounded-xl font-bold glass-btn transition-all sm:w-auto w-full shadow-lg hover:-translate-y-1">
+                <Link to="/directory" className="px-8 py-4 rounded-xl font-bold glass-btn transition-all sm:w-auto w-full shadow-lg hover:-translate-y-1 flex items-center justify-center">
                     Explore Organizations
-                </button>
-                <Link to="/ngo/template-ngo" className="px-8 py-4 rounded-xl font-bold border border-theme-primary/10 hover:bg-theme-primary/5 transition-all sm:w-auto w-full shadow-lg hover:-translate-y-1 flex items-center justify-center">
+                </Link>
+                <Link to="/ngo/five-fold-maitry" className="px-8 py-4 rounded-xl font-bold border border-theme-primary/10 hover:bg-theme-primary/5 transition-all sm:w-auto w-full shadow-lg hover:-translate-y-1 flex items-center justify-center">
                     See Example Profile
                 </Link>
             </div>
