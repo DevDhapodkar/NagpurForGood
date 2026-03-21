@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../utils/firebase';
+import FileUpload from '../components/common/FileUpload';
 
 // ─── Steps Definition ────────────────────────────────────────────────────────
 const STEPS = [
@@ -111,7 +112,8 @@ const RegisterNGO = () => {
             section80G: '', 
             section12A: '',
             panNo: '',
-            tanNo: ''
+            tanNo: '',
+            certificateUrl: ''
         },
         // Step 4 – Financials & Transparency
         financials: {
@@ -222,15 +224,15 @@ const RegisterNGO = () => {
                         onChange={e => set('tagline', e.target.value)}
                     />
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        <InputField label="Logo URL" icon={Upload}
-                            type="url" placeholder="Direct link to logo image"
-                            value={form.logoUrl}
-                            onChange={e => set('logoUrl', e.target.value)}
+                        <FileUpload 
+                            label="Organization Logo" icon={Upload} required
+                            onUploadComplete={(url) => set('logoUrl', url)}
+                            pathPrefix="logos"
                         />
-                        <InputField label="Cover Image URL" icon={Upload}
-                            type="url" placeholder="Direct link to banner image"
-                            value={form.imageUrl}
-                            onChange={e => set('imageUrl', e.target.value)}
+                        <FileUpload 
+                            label="Cover Image" icon={Upload} required
+                            onUploadComplete={(url) => set('imageUrl', url)}
+                            pathPrefix="covers"
                         />
                     </div>
                     <TextareaField label="Short Description" icon={FileText} required rows={2}
@@ -339,6 +341,12 @@ const RegisterNGO = () => {
                             value={form.legalDetails.tanNo}
                             onChange={e => setNested('legalDetails', 'tanNo', e.target.value)}
                         />
+                        <FileUpload 
+                            label="Registration Certificate (PDF/Image)" icon={Upload}
+                            accept="image/*,.pdf"
+                            onUploadComplete={(url) => setNested('legalDetails', 'certificateUrl', url)}
+                            pathPrefix="certificates"
+                        />
                     </div>
                 </div>
             );
@@ -372,10 +380,11 @@ const RegisterNGO = () => {
                                 <option>Regularly Audited</option>
                             </select>
                         </div>
-                        <InputField label="Financial Reports Link (Optional)" icon={Globe}
-                            type="url" placeholder="Google Drive / Website link to reports"
-                            value={form.financials.reportsLink}
-                            onChange={e => setNested('financials', 'reportsLink', e.target.value)}
+                        <FileUpload 
+                            label="Recent Audit Report" icon={Upload}
+                            accept=".pdf,.doc,.docx"
+                            onUploadComplete={(url) => setNested('financials', 'reportsLink', url)}
+                            pathPrefix="reports"
                         />
                     </div>
                 </div>

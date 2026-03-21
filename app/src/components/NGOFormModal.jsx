@@ -3,8 +3,9 @@ import {
     X, Save, Building2, Phone, Shield, FileText, 
     MapPin, User, Star, Heart, Award, Instagram, 
     Facebook, Youtube, Plus, Trash2, Globe, Mail,
-    BadgeCheck, ExternalLink, ChevronRight, ChevronLeft
+    BadgeCheck, ExternalLink, ChevronRight, ChevronLeft, Upload
 } from 'lucide-react';
+import FileUpload from './common/FileUpload';
 
 const NAGPUR_AREAS = [
     'South Nagpur', 'North Nagpur', 'East Nagpur', 'West Nagpur', 'Central Nagpur',
@@ -50,7 +51,7 @@ const NGOFormModal = ({ isOpen, onClose, onSubmit, initialData = null }) => {
         email: '',
         address: '',
         website: '',
-        legalDetails: { registrationNo: '', csr1: '', section80G: '', section12A: '', panNo: '', tanNo: '' },
+        legalDetails: { registrationNo: '', csr1: '', section80G: '', section12A: '', panNo: '', tanNo: '', certificateUrl: '' },
         financials: { upiId: '', bankName: '', auditStatus: 'Not Audited', reportsLink: '' },
         geoReach: [],
         leadership: [],
@@ -84,7 +85,7 @@ const NGOFormModal = ({ isOpen, onClose, onSubmit, initialData = null }) => {
                 categories: [], logoUrl: '', imageUrl: '', chairperson: '',
                 founder: '', foundedYear: '', contact: '', email: '',
                 address: '', website: '',
-                legalDetails: { registrationNo: '', csr1: '', section80G: '', section12A: '', panNo: '', tanNo: '' },
+                legalDetails: { registrationNo: '', csr1: '', section80G: '', section12A: '', panNo: '', tanNo: '', certificateUrl: '' },
                 financials: { upiId: '', bankName: '', auditStatus: 'Not Audited', reportsLink: '' },
                 geoReach: [], leadership: [], programs: [], impactStats: [],
                 certifications: [], socialLinks: { instagram: '', facebook: '', youtube: '', email: '' },
@@ -135,13 +136,23 @@ const NGOFormModal = ({ isOpen, onClose, onSubmit, initialData = null }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Cleanup payloads if needed (e.g. mapping mockUPI)
+        
+        // Split internal metadata from data we want to save
+        // NOTE: We MUST keep 'id' as it is the NGO's unique slug used for routing
+        const { firestoreId, updatedAt, ...saveData } = formData;
+        
         const payload = {
-            ...formData,
-            mockUPI: formData.financials.upiId,
-            image: formData.imageUrl || formData.image, // fallbacks
-            logo: formData.logoUrl || formData.logo
+            ...saveData,
+            mockUPI: formData.financials?.upiId || '',
+            image: formData.imageUrl || saveData.image || '', 
+            logo: formData.logoUrl || saveData.logo || ''
         };
+
+        // Remove firestoreId if it somehow ended up in nested objects
+        Object.keys(payload).forEach(key => {
+            if (payload[key] === undefined) delete payload[key];
+        });
+
         onSubmit(payload);
         onClose();
     };
@@ -239,8 +250,18 @@ const NGOFormModal = ({ isOpen, onClose, onSubmit, initialData = null }) => {
                                         <div className="space-y-1.5"><FieldLabel icon={FileText}>Short Summary</FieldLabel><textarea name="description" value={formData.description} onChange={handleChange} className="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-500/50 transition-colors resize-none h-20" /></div>
                                         <div className="space-y-1.5"><FieldLabel icon={FileText}>Detailed Mission Statement</FieldLabel><textarea name="longDescription" value={formData.longDescription} onChange={handleChange} className="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-amber-500/50 transition-colors resize-none h-40" /></div>
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div className="space-y-1.5"><FieldLabel icon={ExternalLink}>Logo PNG Link</FieldLabel><TextInput name="logoUrl" value={formData.logoUrl} onChange={handleChange} placeholder="https://..." /></div>
-                                            <div className="space-y-1.5"><FieldLabel icon={ExternalLink}>Banner Imagery Link</FieldLabel><TextInput name="imageUrl" value={formData.imageUrl} onChange={handleChange} placeholder="https://..." /></div>
+                                            <FileUpload 
+                                                label="Organization Logo" icon={Upload}
+                                                initialPreview={formData.logoUrl}
+                                                onUploadComplete={(url) => setFormData(prev => ({ ...prev, logoUrl: url }))}
+                                                pathPrefix="logos"
+                                            />
+                                            <FileUpload 
+                                                label="Banner Imagery" icon={Upload}
+                                                initialPreview={formData.imageUrl}
+                                                onUploadComplete={(url) => setFormData(prev => ({ ...prev, imageUrl: url }))}
+                                                pathPrefix="covers"
+                                            />
                                         </div>
                                     </div>
                                 )}
@@ -270,6 +291,15 @@ const NGOFormModal = ({ isOpen, onClose, onSubmit, initialData = null }) => {
                                             <div className="space-y-1.5"><FieldLabel icon={Award}>Section 12A Certificate</FieldLabel><TextInput value={formData.legalDetails.section12A} onChange={e => handleNestedChange('legalDetails', 'section12A', e.target.value)} /></div>
                                             <div className="space-y-1.5"><FieldLabel icon={FileText}>PAN Card No.</FieldLabel><TextInput value={formData.legalDetails.panNo} onChange={e => handleNestedChange('legalDetails', 'panNo', e.target.value)} /></div>
                                             <div className="space-y-1.5"><FieldLabel icon={FileText}>TAN ID</FieldLabel><TextInput value={formData.legalDetails.tanNo} onChange={e => handleNestedChange('legalDetails', 'tanNo', e.target.value)} /></div>
+                                            <div className="space-y-1.5 pt-2">
+                                                <FileUpload 
+                                                    label="Registration Certificate" icon={Upload}
+                                                    accept="image/*,.pdf"
+                                                    initialPreview={formData.legalDetails.certificateUrl}
+                                                    onUploadComplete={(url) => handleNestedChange('legalDetails', 'certificateUrl', url)}
+                                                    pathPrefix="certificates"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 )}
@@ -287,7 +317,14 @@ const NGOFormModal = ({ isOpen, onClose, onSubmit, initialData = null }) => {
                                                     <option>Regularly Audited</option>
                                                 </select>
                                             </div>
-                                            <div className="space-y-1.5"><FieldLabel icon={Globe}>Financial Reports URL</FieldLabel><TextInput value={formData.financials.reportsLink} onChange={e => handleNestedChange('financials', 'reportsLink', e.target.value)} placeholder="https://..." /></div>
+                                            <div className="space-y-1.5">
+                                                <FileUpload 
+                                                    label="Audit Report" icon={Upload}
+                                                    accept=".pdf,.doc,.docx"
+                                                    onUploadComplete={(url) => handleNestedChange('financials', 'reportsLink', url)}
+                                                    pathPrefix="reports"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
                                 )}

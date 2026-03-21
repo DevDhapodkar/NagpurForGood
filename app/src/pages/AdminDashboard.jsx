@@ -178,25 +178,34 @@ const AdminDashboard = () => {
     const handleAddClick = () => { setEditingNGO(null); setIsFormOpen(true); };
     const handleEditClick = (ngo) => { setEditingNGO(ngo); setIsFormOpen(true); };
 
+    const handleVerifyClick = (id) => {
+        verifyNGO(id);
+        showToast("NGO successfully verified.", "success");
+    };
+
     const handleDeleteClick = (id) => {
-        if(window.confirm("Are you sure you want to delete this organization profile?")) {
+        if (window.confirm("Are you sure? This will remove the organization from the directory permanently.")) {
             deleteNGO(id);
-            showToast("Organization deleted successfully.", "success");
+            showToast("NGO removed from directory.", "orange");
         }
     };
 
-    const handleVerifyClick = (id) => {
-        verifyNGO(id);
-        showToast("Organization has been verified and approved.", "success");
-    };
-
-    const handleModalSubmit = (formData) => {
-        if (editingNGO) {
-            updateNGO(editingNGO.id, formData);
-            showToast("Profile updated successfully.", "success");
-        } else {
-            addNGO(formData);
-            showToast("New organization added. Awaiting verification.", "success");
+    const handleModalSubmit = async (formData) => {
+        try {
+            if (editingNGO) {
+                if (!editingNGO.firestoreId) {
+                    throw new Error("Missing internal Firestore ID. Please refresh the page.");
+                }
+                await updateNGO(editingNGO.firestoreId, formData);
+                showToast("Profile updated successfully.", "success");
+            } else {
+                await addNGO(formData);
+                showToast("New organization added. Awaiting verification.", "success");
+            }
+            setIsFormOpen(false);
+        } catch (err) {
+            console.error('Action failed:', err);
+            showToast(`Error: ${err.message || 'Check permissions'}`, "error");
         }
     };
     const pendingApplicationsCount = applications.filter(a => !a.verified).length;
@@ -701,14 +710,14 @@ const AdminDashboard = () => {
                                                     {/* Actions */}
                                                     <div className="flex items-center justify-end gap-2 shrink-0 opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity">
                                                         {!ngo.verified && (
-                                                            <button onClick={() => handleVerifyClick(ngo.id)} className="p-2 mr-2 pr-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-500 hover:bg-amber-500 hover:text-black transition-all flex items-center gap-1 font-bold text-xs">
+                                                            <button onClick={() => handleVerifyClick(ngo.firestoreId)} className="p-2 mr-2 pr-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-500 hover:bg-amber-500 hover:text-black transition-all flex items-center gap-1 font-bold text-xs">
                                                                 <ShieldCheck className="w-4 h-4" /> Approve
                                                             </button>
                                                         )}
                                                         <button onClick={() => handleEditClick(ngo)} className="p-2 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-orange-400 hover:border-orange-500/30 transition-all" title="Edit Profile">
                                                             <Edit2 className="w-4 h-4" />
                                                         </button>
-                                                        <button onClick={() => handleDeleteClick(ngo.id)} className="p-2 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-red-400 hover:border-red-500/30 transition-all" title="Delete Profile">
+                                                        <button onClick={() => handleDeleteClick(ngo.firestoreId)} className="p-2 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-red-400 hover:border-red-500/30 transition-all" title="Delete Profile">
                                                             <Trash2 className="w-4 h-4" />
                                                         </button>
                                                     </div>
@@ -723,6 +732,14 @@ const AdminDashboard = () => {
 
                 </main>
             </div>
+
+            {/* NGO Master Editor Modal */}
+            <NGOFormModal 
+                isOpen={isFormOpen}
+                onClose={() => setIsFormOpen(false)}
+                onSubmit={handleModalSubmit}
+                initialData={editingNGO}
+            />
 
             {/* NGO Registration Review Modal */}
             <ApplicationDetailsModal 

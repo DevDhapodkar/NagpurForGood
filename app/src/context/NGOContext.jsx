@@ -26,7 +26,7 @@ export const NGOProvider = ({ children }) => {
             const q = query(ngosCol, orderBy('name'));
             const ngoSnapshot = await getDocs(q);
             const list = ngoSnapshot.docs.map(doc => ({
-                id: doc.id,
+                firestoreId: doc.id,
                 ...doc.data()
             }));
             setNgoList(list);
@@ -48,7 +48,7 @@ export const NGOProvider = ({ children }) => {
                 createdAt: new Date().toISOString(),
                 verified: false
             });
-            const addedNGO = { id: docRef.id, ...newNGO };
+            const addedNGO = { firestoreId: docRef.id, ...newNGO };
             setNgoList(prev => [...prev, addedNGO]);
             return addedNGO;
         } catch (error) {
@@ -58,10 +58,14 @@ export const NGOProvider = ({ children }) => {
     };
 
     const updateNGO = async (id, updatedData) => {
+        if (!id) {
+            console.error("updateNGO failed: No document ID provided.");
+            throw new Error("Target document ID is missing. Profile cannot be updated.");
+        }
         try {
             const ngoRef = doc(db, 'ngos', id);
             await updateDoc(ngoRef, updatedData);
-            setNgoList(prev => prev.map(ngo => ngo.id === id ? { ...ngo, ...updatedData } : ngo));
+            setNgoList(prev => prev.map(ngo => ngo.firestoreId === id ? { ...ngo, ...updatedData } : ngo));
         } catch (error) {
             console.error("Failed to update NGO", error);
             throw error;
@@ -72,7 +76,7 @@ export const NGOProvider = ({ children }) => {
         try {
             const ngoRef = doc(db, 'ngos', id);
             await deleteDoc(ngoRef);
-            setNgoList(prev => prev.filter(ngo => ngo.id !== id));
+            setNgoList(prev => prev.filter(ngo => ngo.firestoreId !== id));
         } catch (error) {
             console.error("Failed to delete NGO", error);
             throw error;
@@ -83,7 +87,7 @@ export const NGOProvider = ({ children }) => {
         try {
             const ngoRef = doc(db, 'ngos', id);
             await updateDoc(ngoRef, { verified: true });
-            setNgoList(prev => prev.map(ngo => ngo.id === id ? { ...ngo, verified: true } : ngo));
+            setNgoList(prev => prev.map(ngo => ngo.firestoreId === id ? { ...ngo, verified: true } : ngo));
         } catch (error) {
             console.error("Failed to verify NGO", error);
             throw error;
