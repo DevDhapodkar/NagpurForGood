@@ -2,6 +2,14 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 require('dotenv').config();
+const admin = require('firebase-admin');
+
+// Initialize Firebase Admin
+const serviceAccount = require('./serviceAccountKey.json');
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  storageBucket: process.env.STORAGE_BUCKET
+});
 
 const app = express();
 
@@ -32,6 +40,7 @@ connectDB();
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/ngos', require('./routes/ngos'));
 app.use('/api/donations', require('./routes/donations'));
+app.use('/api/upload', require('./routes/upload'));
 
 const PORT = process.env.PORT || 5000;
 

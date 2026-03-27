@@ -33,7 +33,7 @@ const Impact = () => {
     }, [verifiedNGOs]);
 
     return (
-        <div className="min-h-screen pt-32 pb-20 animate-in fade-in duration-700">
+        <div className="min-h-screen pt-28 md:pt-40 pb-20 animate-in fade-in duration-700">
             <div className="max-w-7xl mx-auto px-6">
                 
                 {/* Header */}

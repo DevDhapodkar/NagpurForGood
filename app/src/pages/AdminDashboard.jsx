@@ -4,7 +4,7 @@ import {
     Search, Plus, Edit2, Trash2, Globe, CheckCircle2,
     Heart, Package, Phone, User, Clock, CheckCheck, XCircle, RefreshCw,
     Building2, ClipboardList, Shield, MapPin, Award, Instagram, Facebook,
-    Youtube, Mail, X, ExternalLink, BadgeCheck, FileText, Star
+    Youtube, Mail, X, ExternalLink, BadgeCheck, FileText, Star, ArrowRight
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useNGOs } from '../context/NGOContext';
@@ -12,8 +12,9 @@ import { useToast } from '../context/ToastContext';
 import { useNavigate, Link } from 'react-router-dom';
 import { calculateTrustScore } from '../utils/trustScore';
 import NGOFormModal from '../components/NGOFormModal';
-import { collection, getDocs, doc, updateDoc, query, orderBy } from 'firebase/firestore';
+import { collection, getDocs, doc, updateDoc, query, orderBy, deleteDoc } from 'firebase/firestore';
 import { db } from '../utils/firebase';
+import AdminPRModal from '../components/AdminPRModal';
 
 const STATUS_CONFIG = {
     pending:   { label: 'Pending',   color: 'text-amber-500',  bg: 'bg-amber-500/10',  border: 'border-amber-500/30',  icon: Clock },
@@ -33,7 +34,7 @@ const TYPE_LABELS = {
 
 const AdminDashboard = () => {
     const { user, logout } = useAuth();
-    const { ngoList, addNGO, updateNGO, deleteNGO, verifyNGO } = useNGOs();
+    const { ngoList, addNGO, updateNGO, deleteNGO, verifyNGO, refreshNGOs } = useNGOs();
     const { showToast } = useToast();
     const navigate = useNavigate();
     
@@ -57,6 +58,15 @@ const AdminDashboard = () => {
     const [appSearch, setAppSearch] = useState('');
     const [selectedApp, setSelectedApp] = useState(null);
     const [isAppModalOpen, setIsAppModalOpen] = useState(false);
+
+    // Profile Edit Requests State
+    const [editRequests, setEditRequests] = useState([]);
+    const [editsLoading, setEditsLoading] = useState(false);
+    const [selectedFields, setSelectedFields] = useState({}); // { requestId: [fieldKeys] }
+
+    // Admin PR Modal State
+    const [isPRModalOpen, setIsPRModalOpen] = useState(false);
+    const [selectedNGOForPR, setSelectedNGOForPR] = useState(null);
 
     const handleLogout = () => {
         logout();
@@ -82,6 +92,7 @@ const AdminDashboard = () => {
     useEffect(() => {
         if (activeTab === 'donations') fetchDonations();
         if (activeTab === 'applications') fetchApplications();
+        if (activeTab === 'edit-requests') fetchEditRequests();
     }, [activeTab, fetchDonations]);
 
     const handleStatusChange = async (donationId, newStatus) => {
@@ -137,12 +148,81 @@ const AdminDashboard = () => {
     const handleRejectApplication = async (firestoreId) => {
         if (!window.confirm('Are you sure you want to reject and delete this application?')) return;
         try {
-            const { deleteDoc } = await import('firebase/firestore');
             await deleteDoc(doc(db, 'ngos', firestoreId));
             setApplications(prev => prev.filter(a => a.firestoreId !== firestoreId));
             showToast('Application rejected and removed.', 'success');
         } catch (err) {
             showToast('Failed to reject application.', 'error');
+        }
+    };
+
+    // Fetch NGO edit requests
+    const fetchEditRequests = useCallback(async () => {
+        setEditsLoading(true);
+        try {
+            const q = query(collection(db, 'ngo_edit_requests'), orderBy('submittedAt', 'desc'));
+            const snapshot = await getDocs(q);
+            const data = snapshot.docs.map(d => ({ firestoreId: d.id, ...d.data() }));
+            setEditRequests(data);
+        } catch (err) {
+            console.error('Failed to fetch edit requests:', err);
+            showToast('Could not load profile edit requests.', 'error');
+        } finally {
+            setEditsLoading(false);
+        }
+    }, [showToast]);
+
+    const toggleFieldSelection = (requestId, fieldKey) => {
+        setSelectedFields(prev => {
+            const current = new Set(prev[requestId] || []);
+            if (current.has(fieldKey)) current.delete(fieldKey);
+            else current.add(fieldKey);
+            return { ...prev, [requestId]: Array.from(current) };
+        });
+    };
+
+    const handleApproveEdit = async (request) => {
+        const selected = selectedFields[request.firestoreId] || [];
+        if (selected.length === 0) {
+            showToast('Please select at least one field to approve.', 'orange');
+            return;
+        }
+
+        try {
+            const ngoRef = doc(db, 'ngos', request.ngoId);
+            
+            // Construct updates using only selected fields
+            const filteredChanges = {};
+            selected.forEach(key => {
+                // Get nested value safely
+                const value = key.split('.').reduce((obj, part) => obj?.[part], request.requestedChanges);
+                filteredChanges[key] = value;
+            });
+
+            await updateDoc(ngoRef, filteredChanges);
+            await deleteDoc(doc(db, 'ngo_edit_requests', request.firestoreId));
+            
+            setEditRequests(prev => prev.filter(r => r.firestoreId !== request.firestoreId));
+            setSelectedFields(prev => {
+                const newState = { ...prev };
+                delete newState[request.firestoreId];
+                return newState;
+            });
+            
+            showToast(`${selected.length} field(s) approved and merged.`, 'success');
+        } catch (err) {
+            console.error('Approval error:', err);
+            showToast('Failed to approve edits.', 'error');
+        }
+    };
+
+    const handleRejectEdit = async (requestId) => {
+        try {
+            await deleteDoc(doc(db, 'ngo_edit_requests', requestId));
+            setEditRequests(prev => prev.filter(r => r.firestoreId !== requestId));
+            showToast('Profile edit request rejected.', 'success');
+        } catch (err) {
+            showToast('Failed to reject edit request.', 'error');
         }
     };
 
@@ -208,6 +288,16 @@ const AdminDashboard = () => {
             showToast(`Error: ${err.message || 'Check permissions'}`, "error");
         }
     };
+
+    const handlePROpen = (ngo) => {
+        setSelectedNGOForPR(ngo);
+        setIsPRModalOpen(true);
+    };
+
+    const handlePRUpdate = () => {
+        refreshNGOs();
+        showToast("NGO Evaluation saved successfully!", "success");
+    };
     const pendingApplicationsCount = applications.filter(a => !a.verified).length;
 
     const sidebarItems = [
@@ -216,11 +306,12 @@ const AdminDashboard = () => {
         { id: 'verifications', icon: ShieldCheck,    label: 'Verifications', badge: pendingNGOs },
         { id: 'applications',  icon: ClipboardList,  label: 'Applications',  badge: pendingApplicationsCount },
         { id: 'donations',     icon: Heart,          label: 'Donations',     badge: pendingDonationsCount },
+        { id: 'edit-requests', icon: Edit2,          label: 'Profile Requests', badge: editRequests.length },
         { id: 'settings',      icon: Settings,       label: 'Settings' },
     ];
 
     return (
-        <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans pt-32 pb-20 animate-in fade-in duration-700">
+        <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans pt-32 md:pt-44 pb-20 animate-in fade-in duration-700">
             <div className="max-w-[90rem] mx-auto px-6 h-full flex flex-col md:flex-row gap-8">
                 
                 {/* Sidebar Navigation */}
@@ -456,7 +547,12 @@ const AdminDashboard = () => {
                                                     <div className="hidden lg:flex flex-col w-24 shrink-0">
                                                         <div className="text-[10px] uppercase font-black tracking-widest text-[var(--text-muted)] mb-0.5">Received</div>
                                                         <div className="text-xs text-[var(--text-secondary)]">
-                                                            {new Date(donation.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                                                            {donation.createdAt?.toDate
+                                                                ? donation.createdAt.toDate().toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
+                                                                : donation.createdAt
+                                                                    ? new Date(donation.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
+                                                                    : '—'}
+
                                                         </div>
                                                     </div>
 
@@ -598,6 +694,18 @@ const AdminDashboard = () => {
                                                                 </button>
                                                             </>
                                                         )}
+                                                        {app.verified && (
+                                                            <button 
+                                                                onClick={() => {
+                                                                    navigator.clipboard.writeText(window.location.origin + '/welcome');
+                                                                    showToast('Welcome link copied to clipboard!', 'success');
+                                                                }}
+                                                                className="p-2.5 rounded-xl glass-btn text-orange-500 hover:bg-orange-500/10"
+                                                                title="Copy Welcome Link"
+                                                            >
+                                                                <Link className="w-5 h-5" />
+                                                            </button>
+                                                        )}
                                                         <button 
                                                             onClick={() => handleOpenAppModal(app)}
                                                             className="p-2.5 rounded-xl glass-btn text-[var(--text-muted)] hover:text-orange-400" 
@@ -608,6 +716,13 @@ const AdminDashboard = () => {
                                                         <Link to={`/ngo/${app.id}`} className="p-2.5 rounded-xl glass-btn text-[var(--text-muted)] hover:text-orange-400" title="Public Profile Preview">
                                                             <Globe className="w-5 h-5" />
                                                         </Link>
+                                                        <button 
+                                                            onClick={() => handlePROpen(app)}
+                                                            className="p-2.5 rounded-xl bg-amber-500/10 text-amber-500 border border-amber-500/20 hover:bg-amber-500 hover:text-white transition-all"
+                                                            title="PR Team Feedback"
+                                                        >
+                                                            <Shield className="w-5 h-5" />
+                                                        </button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -618,8 +733,162 @@ const AdminDashboard = () => {
                         </div>
                     )}
 
+                    {/* ─── EDIT REQUESTS TAB ─── */}
+                    {activeTab === 'edit-requests' && (
+                        <div className="space-y-6 animate-in slide-in-from-bottom-4 duration-500">
+                            <div className="glass-panel p-6 rounded-3xl bg-blue-500/5 border border-blue-500/20">
+                                <div className="flex items-center gap-4">
+                                    <div className="p-3 rounded-2xl bg-blue-500/10 text-blue-500">
+                                        <Edit2 className="w-6 h-6" />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-xl font-black font-serif">Profile Edit Requests</h2>
+                                        <p className="text-[var(--text-secondary)] text-sm mt-0.5">Review and approve changes requested by NGO representatives.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="glass-panel rounded-[2.5rem] overflow-hidden flex flex-col min-h-[500px]">
+                                <div className="p-6 border-b border-[var(--border-color)] flex items-center justify-between bg-[var(--bg-primary)]/50">
+                                    <h2 className="text-lg font-black tracking-tight">Pending Requests</h2>
+                                    <button 
+                                        onClick={fetchEditRequests}
+                                        disabled={editsLoading}
+                                        className="py-2.5 px-5 rounded-xl font-bold text-xs uppercase bg-[var(--bg-secondary)] border border-[var(--border-color)] flex items-center gap-2"
+                                    >
+                                        <RefreshCw className={`w-3 h-3 ${editsLoading ? 'animate-spin' : ''}`} /> Refresh
+                                    </button>
+                                </div>
+                                <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                                    {editsLoading ? (
+                                        <div className="flex justify-center py-10"><div className="w-8 h-8 rounded-full border-2 border-orange-500/30 border-t-orange-500 animate-spin"></div></div>
+                                    ) : editRequests.length === 0 ? (
+                                        <div className="text-center py-10 text-[var(--text-muted)]">No pending edit requests.</div>
+                                    ) : (
+                                        editRequests.map((req) => {
+                                            const originalNGO = ngoList.find(n => n.firestoreId === req.ngoId || n.id === req.ngoId);
+                                            
+                                            // Helper to check if a value has changed
+                                            const hasChanged = (key, nestedKey = null) => {
+                                                if (!originalNGO) return true;
+                                                const current = nestedKey ? originalNGO[key]?.[nestedKey] : originalNGO[key];
+                                                const proposed = nestedKey ? req.requestedChanges[key]?.[nestedKey] : req.requestedChanges[key];
+                                                
+                                                // Handle arrays/objects with JSON stringify for simple comparison
+                                                return JSON.stringify(current) !== JSON.stringify(proposed);
+                                            };
+
+                                            const DiffItem = ({ label, current, proposed, fieldKey, requestId, isImage = false }) => {
+                                                if (JSON.stringify(current) === JSON.stringify(proposed)) return null;
+                                                const isSelected = (selectedFields[requestId] || []).includes(fieldKey);
+                                                
+                                                return (
+                                                    <div className={`grid grid-cols-1 md:grid-cols-12 gap-4 py-6 border-b border-[var(--border-color)] last:border-0 transition-all ${isSelected ? 'bg-green-500/5 -mx-4 px-4' : 'opacity-60'}`}>
+                                                        <div className="md:col-span-1 flex items-start pt-8">
+                                                            <input 
+                                                                type="checkbox" 
+                                                                checked={isSelected}
+                                                                onChange={() => toggleFieldSelection(requestId, fieldKey)}
+                                                                className="w-5 h-5 rounded border-[var(--border-color)] text-green-600 focus:ring-green-500 bg-[var(--bg-secondary)]"
+                                                            />
+                                                        </div>
+                                                        <div className="md:col-span-5">
+                                                            <span className="text-[10px] uppercase font-black text-[var(--text-muted)] tracking-widest block mb-2">{label} (Current)</span>
+                                                            {isImage ? (
+                                                                current ? <img src={current} className="h-16 w-16 rounded-xl object-contain border border-red-500/20 bg-red-500/5 p-1" alt="Current" /> : <div className="text-xs italic opacity-40">None</div>
+                                                            ) : (
+                                                                <p className="text-xs text-red-400 bg-red-500/5 p-3 rounded-xl border border-red-500/20 line-clamp-3">{String(current || '—')}</p>
+                                                            )}
+                                                        </div>
+                                                        <div className="md:col-span-1 flex items-center justify-center pt-6">
+                                                            <ArrowRight className={`w-4 h-4 ${isSelected ? 'text-green-500' : 'text-[var(--text-muted)]'}`} />
+                                                        </div>
+                                                        <div className="md:col-span-5">
+                                                            <span className="text-[10px] uppercase font-black text-green-500 tracking-widest block mb-2">{label} (Proposed)</span>
+                                                            {isImage ? (
+                                                                proposed ? <img src={proposed} className="h-16 w-16 rounded-xl object-contain border border-green-500/20 bg-green-500/5 p-1" alt="Proposed" /> : <div className="text-xs italic opacity-40">None</div>
+                                                            ) : (
+                                                                <p className="text-xs text-green-400 bg-green-500/5 p-3 rounded-xl border border-green-500/20 line-clamp-3 font-bold">{String(proposed || '—')}</p>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            };
+
+                                            return (
+                                                <div key={req.firestoreId} className="p-8 rounded-[2rem] border border-blue-500/20 bg-[var(--bg-primary)] shadow-xl animate-in fade-in slide-in-from-bottom-2 duration-500">
+                                                    <div className="flex justify-between items-start mb-6 border-b border-[var(--border-color)] pb-6">
+                                                        <div className="flex items-center gap-4">
+                                                            <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-500">
+                                                                <Building2 className="w-6 h-6" />
+                                                            </div>
+                                                            <div>
+                                                                <h3 className="text-xl font-black font-serif">{req.ngoName}</h3>
+                                                                <p className="text-xs text-[var(--text-secondary)] font-medium mt-1">Requested by: <span className="text-blue-400">{req.submittedBy}</span></p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex flex-col items-end gap-2">
+                                                            <div className="text-[10px] text-[var(--text-muted)] font-black uppercase tracking-widest">
+                                                                {req.submittedAt?.toDate?.() ? new Date(req.submittedAt.toDate()).toLocaleString() : 'Recent'}
+                                                            </div>
+                                                            <div className="flex gap-2">
+                                                                <button 
+                                                                    onClick={() => handleApproveEdit(req)}
+                                                                    className="px-4 py-1.5 rounded-lg bg-green-600 hover:bg-green-500 text-white text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-green-600/20"
+                                                                >
+                                                                    Apply Selected
+                                                                </button>
+                                                                <button 
+                                                                    onClick={() => handleRejectEdit(req.firestoreId)}
+                                                                    className="px-4 py-1.5 rounded-lg bg-red-600/10 border border-red-600/20 text-red-500 hover:bg-red-600 hover:text-white text-[10px] font-black uppercase tracking-widest transition-all"
+                                                                >
+                                                                    Reject All
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="bg-[var(--bg-secondary)]/50 rounded-3xl p-6 mb-8 border border-[var(--border-color)]">
+                                                        <h4 className="text-xs font-black uppercase tracking-widest text-[var(--text-muted)] mb-4 flex items-center gap-2">
+                                                            <RefreshCw className="w-3 h-3" /> Field Comparison
+                                                        </h4>
+                                                        
+                                                        {/* Branding */}
+                                                        <DiffItem label="Organization Name" fieldKey="name" requestId={req.firestoreId} current={originalNGO?.name} proposed={req.requestedChanges.name} />
+                                                        <DiffItem label="Tagline" fieldKey="tagline" requestId={req.firestoreId} current={originalNGO?.tagline} proposed={req.requestedChanges.tagline} />
+                                                        <DiffItem label="Logo" fieldKey="logo" requestId={req.firestoreId} current={originalNGO?.logo} proposed={req.requestedChanges.logo} isImage />
+                                                        <DiffItem label="Short Description" fieldKey="description" requestId={req.firestoreId} current={originalNGO?.description} proposed={req.requestedChanges.description} />
+                                                        
+                                                        {/* Contact */}
+                                                        <DiffItem label="Primary Contact" fieldKey="contact" requestId={req.firestoreId} current={originalNGO?.contact} proposed={req.requestedChanges.contact} />
+                                                        <DiffItem label="Official Email" fieldKey="email" requestId={req.firestoreId} current={originalNGO?.email} proposed={req.requestedChanges.email} />
+                                                        <DiffItem label="Website" fieldKey="website" requestId={req.firestoreId} current={originalNGO?.website} proposed={req.requestedChanges.website} />
+                                                        
+                                                        {/* Legal & Financial */}
+                                                        <DiffItem label="Registration #" fieldKey="legalDetails.registrationNo" requestId={req.firestoreId} current={originalNGO?.legalDetails?.registrationNo} proposed={req.requestedChanges.legalDetails?.registrationNo} />
+                                                        <DiffItem label="UPI ID" fieldKey="financials.upiId" requestId={req.firestoreId} current={originalNGO?.financials?.upiId} proposed={req.requestedChanges.financials?.upiId} />
+                                                        <DiffItem label="Audit Status" fieldKey="financials.auditStatus" requestId={req.firestoreId} current={originalNGO?.financials?.auditStatus} proposed={req.requestedChanges.financials?.auditStatus} />
+                                                        
+                                                        {/* Complex fields summary */}
+                                                        {['categories', 'geoReach', 'boardOfDirectors', 'teamAndLeadership', 'leadership', 'programs', 'impactStats', 'socialLinks'].map(key => (
+                                                            <DiffItem key={key} label={key.charAt(0).toUpperCase() + key.slice(1)} fieldKey={key} requestId={req.firestoreId} current={originalNGO?.[key]} proposed={req.requestedChanges[key]} />
+                                                        ))}
+                                                        
+                                                        {!originalNGO && (
+                                                            <p className="text-sm text-red-400 italic">Original NGO data not found in current list. Review as new data.</p>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            );
+                                        })
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {/* ─── NGO DATA TABLE (Overview / Manage / Verifications) ─── */}
-                    {activeTab !== 'donations' && activeTab !== 'applications' && (
+                    {activeTab !== 'donations' && activeTab !== 'applications' && activeTab !== 'edit-requests' && (
                         <div className="glass-panel rounded-[2.5rem] overflow-hidden flex flex-col h-[600px] animate-in slide-in-from-bottom-8 duration-700">
                             {/* Table Header / Toolbar */}
                             <div className="p-6 border-b border-[var(--border-color)] flex flex-col sm:flex-row items-center gap-4 justify-between bg-[var(--bg-primary)]/50">
@@ -714,6 +983,13 @@ const AdminDashboard = () => {
                                                                 <ShieldCheck className="w-4 h-4" /> Approve
                                                             </button>
                                                         )}
+                                                        <button 
+                                                            onClick={() => handlePROpen(ngo)} 
+                                                            className="p-2 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-amber-500 hover:border-amber-500/30 transition-all" 
+                                                            title="PR Team Feedback"
+                                                        >
+                                                            <Shield className="w-4 h-4" />
+                                                        </button>
                                                         <button onClick={() => handleEditClick(ngo)} className="p-2 rounded-lg bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-secondary)] hover:text-orange-400 hover:border-orange-500/30 transition-all" title="Edit Profile">
                                                             <Edit2 className="w-4 h-4" />
                                                         </button>
@@ -748,13 +1024,23 @@ const AdminDashboard = () => {
                 app={selectedApp}
                 onApprove={handleApproveApplication}
                 onReject={handleRejectApplication}
+                onPROpen={handlePROpen}
             />
+
+            {isPRModalOpen && (
+                <AdminPRModal 
+                    isOpen={isPRModalOpen}
+                    onClose={() => setIsPRModalOpen(false)}
+                    ngo={selectedNGOForPR}
+                    onUpdate={handlePRUpdate}
+                />
+            )}
         </div>
     );
 };
 
 // ─── Sub-component: Application Details Modal ────────────────────────────────
-const ApplicationDetailsModal = ({ isOpen, onClose, app, onApprove, onReject }) => {
+const ApplicationDetailsModal = ({ isOpen, onClose, app, onApprove, onReject, onPROpen }) => {
     if (!isOpen || !app) return null;
 
     const sections = [
@@ -898,6 +1184,12 @@ const ApplicationDetailsModal = ({ isOpen, onClose, app, onApprove, onReject }) 
                         Submitted: {app.submittedAt?.toDate?.() ? new Date(app.submittedAt.toDate()).toLocaleString() : 'Recent'}
                     </div>
                     <div className="flex gap-4 w-full sm:w-auto">
+                        <button 
+                            onClick={() => onPROpen(app)}
+                            className="px-6 py-4 rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] bg-amber-500/10 text-amber-500 border border-amber-500/20 hover:bg-amber-500 hover:text-white transition-all w-full sm:w-auto flex items-center justify-center gap-2"
+                        >
+                            <Shield className="w-3 h-3" /> PR Report
+                        </button>
                         {!app.verified ? (
                             <>
                                 <button 

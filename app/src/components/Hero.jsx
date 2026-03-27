@@ -1,12 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useNGOs } from '../context/NGOContext';
 
 const Hero = () => {
+    const { ngoList } = useNGOs();
+    const verifiedCount = ngoList.filter(ngo => ngo.verified).length;
+
     return (
-        <div className="relative pt-32 pb-20 px-6 md:px-12 flex flex-col items-center justify-center text-center max-w-5xl mx-auto z-10">
+        <div className="relative pt-32 md:pt-44 pb-20 px-6 md:px-12 flex flex-col items-center justify-center text-center max-w-5xl mx-auto z-10">
             <div className="inline-flex m-auto items-center gap-2 px-3 py-1 rounded-full glass-panel border border-[var(--border-color)] mb-6">
                 <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-                <span className="text-xs font-medium text-[var(--text-secondary)] tracking-wide uppercase">15 Verified NGOs</span>
+                <span className="text-xs font-medium text-[var(--text-secondary)] tracking-wide uppercase">{verifiedCount} Verified NGOs</span>
             </div>
 
             <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tight text-[var(--text-primary)] mb-6">

@@ -3,8 +3,9 @@ import {
     Building2, User, Phone, Mail, Globe, MapPin, FileText, 
     Award, Shield, BadgeCheck, Plus, Trash2, ArrowRight, 
     ArrowLeft, CheckCircle, Heart, Upload, Instagram, Youtube,
-    Facebook, Star, ChevronDown
+    Facebook, Star, ChevronDown, Milestone, HeartPulse, Smartphone, Linkedin, Info
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../utils/firebase';
 import FileUpload from '../components/common/FileUpload';
@@ -123,17 +124,23 @@ const RegisterNGO = () => {
             transparencyLevel: 'Basic',
             reportsLink: ''
         },
-        // Step 5 – Geo Reach
         geoReach: [],
         // Step 6 – Leadership
-        leadership: [{ name: '', role: '', profileUrl: '' }],
+        boardOfDirectors: [{ name: '', role: '', profileUrl: '', linkedin: '' }],
+        teamAndLeadership: [{ name: '', role: '', profileUrl: '', linkedin: '' }],
         // Step 7 – Programs
         programs: [{ title: '', description: '', impact: '', location: '' }],
+        drives: [{ title: '', description: '', location: '' }],
+        volunteerOps: false,
         // Step 8 – Impact Stats
         impactStats: [{ label: '', value: '', icon: 'Heart' }],
-        // Step 9 – Certifications
+        milestones: [{ year: '', title: '', description: '' }],
+        // Step 9 – Certifications & Assets
         certifications: [],
-        socialLinks: { instagram: '', facebook: '', youtube: '', email: '' },
+        socialLinks: { instagram: '', facebook: '', youtube: '', email: '', linkedin: '' },
+        appLinks: { android: '', ios: '' },
+        awards: [''],
+        testimonials: [{ name: '', quote: '', role: '' }]
     });
 
     const set = (key, value) => setForm(prev => ({ ...prev, [key]: value }));
@@ -258,6 +265,36 @@ const RegisterNGO = () => {
                                     }`}
                                 >{cat}</button>
                             ))}
+                        </div>
+
+                        {/* Drives Subsection */}
+                        <div className="mt-12 pt-10 border-t border-[var(--border-color)]">
+                            <div className="flex items-center justify-between mb-6">
+                                <div>
+                                    <h3 className="text-lg font-black font-serif flex items-center gap-2">
+                                        <HeartPulse className="w-5 h-5 text-red-400" />
+                                        Community Drives
+                                    </h3>
+                                    <p className="text-[var(--text-secondary)] text-xs mt-1">Specific events or community mobilization efforts (e.g. Tree Plantation Drive)</p>
+                                </div>
+                                <button type="button" onClick={() => addListItem('drives', { title: '', description: '', location: '' })} className="flex items-center gap-2 px-4 py-2 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-500 text-[10px] font-black uppercase tracking-widest hover:bg-amber-500/20 transition-all shadow-sm">
+                                    <Plus className="w-3 h-3" /> Add Drive
+                                </button>
+                            </div>
+                            <div className="space-y-6">
+                                {form.drives.map((d, i) => (
+                                    <div key={i} className="glass-panel p-6 rounded-3xl relative animate-in slide-in-from-top-2 duration-300">
+                                        <button type="button" onClick={() => removeListItem('drives', i)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1.5 shadow-lg"><Trash2 className="w-3 h-3" /></button>
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <InputField label="Drive Title" value={d.title} onChange={e => updateListItem('drives', i, 'title', e.target.value)} placeholder="e.g. Winter Clothes Collection 2024" />
+                                            <InputField label="Location/Area" value={d.location} onChange={e => updateListItem('drives', i, 'location', e.target.value)} placeholder="e.g. East Nagpur" />
+                                            <div className="md:col-span-2">
+                                                <TextareaField label="Brief Description" value={d.description} onChange={e => updateListItem('drives', i, 'description', e.target.value)} placeholder="What was the goal and outcome of this drive?" rows={2} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -411,23 +448,46 @@ const RegisterNGO = () => {
 
             // ── Step 6: Leadership ───────────────────────────────────────
             case 6: return (
-                <div className="space-y-6">
-                    <SectionHeader icon={User} title="Core Leadership" subtitle="Add board members or founders." />
-                    <div className="space-y-4">
-                        {form.leadership.map((l, i) => (
-                            <div key={i} className="glass-panel p-6 rounded-2xl relative space-y-4">
-                                <button type="button" onClick={() => removeListItem('leadership', i)} className="absolute top-4 right-4 text-red-400 opacity-50 hover:opacity-100"><Trash2 className="w-4 h-4" /></button>
-                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                    <InputField label="Full Name" icon={User} value={l.name} onChange={e => updateListItem('leadership', i, 'name', e.target.value)} />
-                                    <InputField label="Role" icon={Award} value={l.role} onChange={e => updateListItem('leadership', i, 'role', e.target.value)} />
-                                    <InputField label="LinkedIn / Profile Link" icon={Globe} value={l.profileUrl} onChange={e => updateListItem('leadership', i, 'profileUrl', e.target.value)} />
+                <div className="space-y-12">
+                    <div>
+                        <SectionHeader icon={User} title="Board of Directors" subtitle="Add individual members of your governing board." />
+                        <div className="space-y-4 mt-6">
+                            {form.boardOfDirectors.map((l, i) => (
+                                <div key={i} className="glass-panel p-6 rounded-2xl relative space-y-4">
+                                    <button type="button" onClick={() => removeListItem('boardOfDirectors', i)} className="absolute top-4 right-4 text-red-400 opacity-50 hover:opacity-100"><Trash2 className="w-4 h-4" /></button>
+                                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
+                                        <InputField label="Full Name" icon={User} value={l.name} onChange={e => updateListItem('boardOfDirectors', i, 'name', e.target.value)} />
+                                        <InputField label="Role" icon={Award} value={l.role} onChange={e => updateListItem('boardOfDirectors', i, 'role', e.target.value)} />
+                                        <InputField label="Profile Link" icon={Globe} value={l.profileUrl} onChange={e => updateListItem('boardOfDirectors', i, 'profileUrl', e.target.value)} />
+                                        <InputField label="LinkedIn" icon={Linkedin} value={l.linkedin} onChange={e => updateListItem('boardOfDirectors', i, 'linkedin', e.target.value)} />
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
+                        <button type="button" onClick={() => addListItem('boardOfDirectors', { name: '', role: '', profileUrl: '', linkedin: '' })} className="w-full py-4 rounded-2xl border-2 border-dashed border-[var(--border-color)] text-[var(--text-muted)] hover:text-orange-400 hover:border-orange-500/50 transition-all font-bold flex items-center justify-center gap-2 mt-4">
+                            <Plus className="w-4 h-4" /> Add Board Member
+                        </button>
                     </div>
-                    <button type="button" onClick={() => addListItem('leadership', { name: '', role: '', profileUrl: '' })} className="w-full py-4 rounded-2xl border-2 border-dashed border-[var(--border-color)] text-[var(--text-muted)] hover:text-orange-400 hover:border-orange-500/50 transition-all font-bold flex items-center justify-center gap-2">
-                        <Plus className="w-4 h-4" /> Add Leadership Member
-                    </button>
+
+                    <div className="pt-10 border-t border-[var(--border-color)]">
+                        <SectionHeader icon={User} title="Team & Leadership" subtitle="Add individual members of your operational team." />
+                        <div className="space-y-4 mt-6">
+                            {form.teamAndLeadership.map((l, i) => (
+                                <div key={i} className="glass-panel p-6 rounded-2xl relative space-y-4">
+                                    <button type="button" onClick={() => removeListItem('teamAndLeadership', i)} className="absolute top-4 right-4 text-red-400 opacity-50 hover:opacity-100"><Trash2 className="w-4 h-4" /></button>
+                                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 text-xs">
+                                        <InputField label="Full Name" icon={User} value={l.name} onChange={e => updateListItem('teamAndLeadership', i, 'name', e.target.value)} />
+                                        <InputField label="Role" icon={Award} value={l.role} onChange={e => updateListItem('teamAndLeadership', i, 'role', e.target.value)} />
+                                        <InputField label="Profile Link" icon={Globe} value={l.profileUrl} onChange={e => updateListItem('teamAndLeadership', i, 'profileUrl', e.target.value)} />
+                                        <InputField label="LinkedIn" icon={Linkedin} value={l.linkedin} onChange={e => updateListItem('teamAndLeadership', i, 'linkedin', e.target.value)} />
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        <button type="button" onClick={() => addListItem('teamAndLeadership', { name: '', role: '', profileUrl: '', linkedin: '' })} className="w-full py-4 rounded-2xl border-2 border-dashed border-[var(--border-color)] text-[var(--text-muted)] hover:text-orange-400 hover:border-orange-500/50 transition-all font-bold flex items-center justify-center gap-2 mt-4">
+                            <Plus className="w-4 h-4" /> Add Team Member
+                        </button>
+                    </div>
                 </div>
             );
 
@@ -451,6 +511,55 @@ const RegisterNGO = () => {
                     <button type="button" onClick={() => addListItem('programs', { title: '', description: '', impact: '', location: '' })} className="w-full py-4 rounded-2xl border-2 border-dashed border-[var(--border-color)] text-[var(--text-muted)] hover:text-orange-400 hover:border-orange-500/50 transition-all font-bold flex items-center justify-center gap-2">
                         <Plus className="w-4 h-4" /> Add Program
                     </button>
+
+                    <div className="mt-8 flex items-center justify-between p-6 glass-panel rounded-3xl border-orange-500/20">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 rounded-2xl bg-orange-500/10 text-orange-400">
+                                <Heart className="w-6 h-6" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-black font-serif">Volunteer Opportunities</h3>
+                                <p className="text-[var(--text-secondary)] text-xs">Do you offer active volunteer roles for citizens?</p>
+                            </div>
+                        </div>
+                        <button 
+                            type="button"
+                            onClick={() => set('volunteerOps', !form.volunteerOps)}
+                            className={`px-6 py-3 rounded-full text-xs font-black uppercase tracking-widest transition-all ${form.volunteerOps ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/30' : 'bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-muted)]'}`}
+                        >
+                            {form.volunteerOps ? 'Enabled' : 'Disabled'}
+                        </button>
+                    </div>
+
+                    {/* Drives Subsection */}
+                    <div className="mt-12 pt-10 border-t border-[var(--border-color)]">
+                        <div className="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 className="text-lg font-black font-serif flex items-center gap-2">
+                                    <HeartPulse className="w-5 h-5 text-red-400" />
+                                    Community Drives
+                                </h3>
+                                <p className="text-[var(--text-secondary)] text-xs mt-1">Specific events or community mobilization efforts (e.g. Tree Plantation Drive)</p>
+                            </div>
+                            <button type="button" onClick={() => addListItem('drives', { title: '', description: '', location: '' })} className="flex items-center gap-2 px-4 py-2 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-500 text-[10px] font-black uppercase tracking-widest hover:bg-amber-500/20 transition-all shadow-sm">
+                                <Plus className="w-3 h-3" /> Add Drive
+                            </button>
+                        </div>
+                        <div className="space-y-6">
+                            {form.drives.map((d, i) => (
+                                <div key={i} className="glass-panel p-6 rounded-3xl relative animate-in slide-in-from-top-2 duration-300">
+                                    <button type="button" onClick={() => removeListItem('drives', i)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1.5 shadow-lg z-10"><Trash2 className="w-3 h-3" /></button>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <InputField label="Drive Title" value={d.title} onChange={e => updateListItem('drives', i, 'title', e.target.value)} placeholder="e.g. Winter Clothes Collection 2024" />
+                                        <InputField label="Location/Area" value={d.location} onChange={e => updateListItem('drives', i, 'location', e.target.value)} placeholder="e.g. East Nagpur" />
+                                        <div className="md:col-span-2">
+                                            <TextareaField label="Brief Description" value={d.description} onChange={e => updateListItem('drives', i, 'description', e.target.value)} placeholder="What was the goal and outcome of this drive?" rows={2} />
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             );
 
@@ -472,6 +581,38 @@ const RegisterNGO = () => {
                     <button type="button" onClick={() => addListItem('impactStats', { label: '', value: '', icon: 'Heart' })} className="w-full py-4 rounded-2xl border-2 border-dashed border-[var(--border-color)] text-[var(--text-muted)] hover:text-orange-400 hover:border-orange-500/50 transition-all font-bold flex items-center justify-center gap-2">
                         <Plus className="w-4 h-4" /> Add Impact Statistic
                     </button>
+
+                    {/* Milestones Subsection */}
+                    <div className="mt-12 pt-10 border-t border-[var(--border-color)]">
+                        <div className="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 className="text-lg font-black font-serif flex items-center gap-2">
+                                    <Milestone className="w-5 h-5 text-amber-500" />
+                                    Organizational Milestones
+                                </h3>
+                                <p className="text-[var(--text-secondary)] text-xs mt-1">Key achievements and historical timeline of the NGO</p>
+                            </div>
+                            <button type="button" onClick={() => addListItem('milestones', { year: '', title: '', description: '' })} className="flex items-center gap-2 px-4 py-2 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-500 text-[10px] font-black uppercase tracking-widest hover:bg-amber-500/20 transition-all shadow-sm">
+                                <Plus className="w-3 h-3" /> Add Milestone
+                            </button>
+                        </div>
+                        <div className="space-y-6">
+                            {form.milestones.map((m, i) => (
+                                <div key={i} className="glass-panel p-6 rounded-3xl relative animate-in slide-in-from-top-2 duration-300">
+                                    <button type="button" onClick={() => removeListItem('milestones', i)} className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1.5 shadow-lg z-10"><Trash2 className="w-3 h-3" /></button>
+                                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                                        <InputField label="Year" value={m.year} onChange={e => updateListItem('milestones', i, 'year', e.target.value)} placeholder="2024" />
+                                        <div className="md:col-span-3">
+                                            <InputField label="Milestone Title" value={m.title} onChange={e => updateListItem('milestones', i, 'title', e.target.value)} placeholder="e.g. Awarded Best City NGO" />
+                                        </div>
+                                        <div className="md:col-span-4">
+                                            <TextareaField label="Description" value={m.description} onChange={e => updateListItem('milestones', i, 'description', e.target.value)} placeholder="Context or details about this milestone..." rows={2} />
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             );
 
@@ -495,7 +636,63 @@ const RegisterNGO = () => {
                         <InputField label="Instagram" icon={Instagram} placeholder="URL" value={form.socialLinks.instagram} onChange={e => setNested('socialLinks', 'instagram', e.target.value)} />
                         <InputField label="Facebook" icon={Facebook} placeholder="URL" value={form.socialLinks.facebook} onChange={e => setNested('socialLinks', 'facebook', e.target.value)} />
                         <InputField label="YouTube" icon={Youtube} placeholder="URL" value={form.socialLinks.youtube} onChange={e => setNested('socialLinks', 'youtube', e.target.value)} />
-                        <InputField label="Public Contact Email" icon={Mail} placeholder="Email" value={form.socialLinks.email} onChange={e => setNested('socialLinks', 'email', e.target.value)} />
+                        <InputField label="LinkedIn (Page)" icon={Linkedin} placeholder="URL" value={form.socialLinks.linkedin} onChange={e => setNested('socialLinks', 'linkedin', e.target.value)} />
+                    </div>
+
+                    <div className="mt-12 pt-10 border-t border-[var(--border-color)]">
+                        <SectionHeader icon={Smartphone} title="Mobile Applications" subtitle="Provide links to your official apps for extra trust points." />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-6">
+                            <InputField label="Play Store (Android)" icon={Globe} placeholder="https://play.google.com/..." value={form.appLinks.android} onChange={e => setNested('appLinks', 'android', e.target.value)} />
+                            <InputField label="App Store (iOS)" icon={Globe} placeholder="https://apps.apple.com/..." value={form.appLinks.ios} onChange={e => setNested('appLinks', 'ios', e.target.value)} />
+                        </div>
+                    </div>
+
+                    <div className="mt-12 pt-10 border-t border-[var(--border-color)]">
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-lg font-black font-serif flex items-center gap-2">
+                                <Award className="w-5 h-5 text-amber-500" />
+                                Awards & Recognition
+                            </h3>
+                            <button type="button" onClick={() => addListItem('awards', '')} className="p-2.5 rounded-xl bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 transition-all">
+                                <Plus className="w-4 h-4" />
+                            </button>
+                        </div>
+                        <div className="space-y-3">
+                            {form.awards.map((a, i) => (
+                                <div key={i} className="flex gap-3">
+                                    <input value={a} onChange={e => {
+                                        const updated = [...form.awards];
+                                        updated[i] = e.target.value;
+                                        set('awards', updated);
+                                    }} placeholder="e.g. Nagpur NGO Excellence Award 2023" className="flex-1 bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl p-3 text-sm focus:outline-none focus:border-orange-500/50 transition-all" />
+                                    <button type="button" onClick={() => removeListItem('awards', i)} className="p-3 text-red-400 opacity-50 hover:opacity-100"><Trash2 className="w-4 h-4" /></button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="mt-12 pt-10 border-t border-[var(--border-color)]">
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="text-lg font-black font-serif flex items-center gap-2">
+                                <Mail className="w-5 h-5 text-blue-500" />
+                                Beneficiary Testimonials
+                            </h3>
+                            <button type="button" onClick={() => addListItem('testimonials', { name: '', quote: '', role: '' })} className="p-2.5 rounded-xl bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 transition-all">
+                                <Plus className="w-4 h-4" />
+                            </button>
+                        </div>
+                        <div className="space-y-4">
+                            {form.testimonials.map((t, i) => (
+                                <div key={i} className="glass-panel p-5 rounded-2xl relative space-y-3">
+                                    <button type="button" onClick={() => removeListItem('testimonials', i)} className="absolute top-4 right-4 text-red-400 opacity-50 hover:opacity-100"><Trash2 className="w-4 h-4" /></button>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <InputField label="Name" value={t.name} onChange={e => updateListItem('testimonials', i, 'name', e.target.value)} />
+                                        <InputField label="Role/Relation" placeholder="e.g. Student" value={t.role} onChange={e => updateListItem('testimonials', i, 'role', e.target.value)} />
+                                    </div>
+                                    <TextareaField label="Quote" rows={2} value={t.quote} onChange={e => updateListItem('testimonials', i, 'quote', e.target.value)} />
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
             );
@@ -561,6 +758,22 @@ const RegisterNGO = () => {
                     <p className="text-[var(--text-secondary)] max-w-lg mx-auto">
                         Submit your organization's details to be listed in our verified NGO directory. Our team will review and approve your profile.
                     </p>
+                </div>
+
+                {/* Trust Score Banner */}
+                <div className="mb-10 p-6 rounded-[2.5rem] bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20 flex flex-col sm:flex-row items-center justify-between gap-6 group hover:border-amber-500/40 transition-all shadow-xl shadow-amber-900/5">
+                    <div className="flex items-center gap-4 text-center sm:text-left">
+                        <div className="w-12 h-12 rounded-2xl bg-amber-500 text-white flex items-center justify-center shadow-lg shadow-amber-900/20 group-hover:scale-110 transition-transform shrink-0">
+                            <BadgeCheck className="w-6 h-6" />
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-black uppercase tracking-widest text-[var(--text-primary)]">Maximize Your Trust Score</h3>
+                            <p className="text-[10px] text-[var(--text-muted)] mt-1 font-medium leading-relaxed">Complete all fields to earn the <span className="text-amber-500 font-black">"Highly Trusted"</span> badge automatically.</p>
+                        </div>
+                    </div>
+                    <Link to="/trust-score" className="px-6 py-2.5 rounded-xl bg-white/5 border border-amber-500/20 text-amber-500 text-[10px] font-black uppercase tracking-widest hover:bg-amber-500 hover:text-white transition-all whitespace-nowrap shadow-sm hover:shadow-amber-500/20">
+                        Learn How it Works
+                    </Link>
                 </div>
 
                 {/* Step Progress */}

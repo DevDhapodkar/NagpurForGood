@@ -6,7 +6,7 @@ import {
     signOut,
     updateProfile
 } from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { auth, db } from '../utils/firebase';
 
 const AuthContext = createContext();
@@ -40,6 +40,21 @@ export const AuthProvider = ({ children }) => {
                         ...userData,
                         ...data
                     };
+                }
+
+                // Check if user email is associated with a verified NGO
+                try {
+                    const ngosRef = collection(db, 'ngos');
+                    const q = query(ngosRef, where('email', '==', firebaseUser.email), where('verified', '==', true));
+                    const querySnapshot = await getDocs(q);
+                    
+                    if (!querySnapshot.empty) {
+                        const ngoDoc = querySnapshot.docs[0];
+                        userData.isNgo = true;
+                        userData.ngoId = ngoDoc.id; // Document ID of the NGO
+                    }
+                } catch (error) {
+                    console.error("Error checking NGO association:", error);
                 }
 
                 setUser(userData);

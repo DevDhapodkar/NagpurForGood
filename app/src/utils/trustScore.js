@@ -1,93 +1,118 @@
 export const calculateTrustScore = (ngo) => {
-    let score = 0;
+    const overrides = ngo.trustScoreOverrides || {};
     const breakdown = [];
-    const MAX_SCORE = 100; // Define a reasonable maximum or calculate dynamically
 
-    // Basic Info (2 points each)
-    if (ngo.name) { score += 2; breakdown.push({ label: 'NGO Name', points: 2 }); }
-    if (ngo.address) { score += 2; breakdown.push({ label: 'Valid Address', points: 2 }); }
-    if (ngo.contact) { score += 2; breakdown.push({ label: 'Contact Info', points: 2 }); }
-    if (ngo.description || ngo.longDescription) { score += 4; breakdown.push({ label: 'Detailed Mission', points: 4 }); }
-    if (ngo.chairperson || ngo.founder) { score += 2; breakdown.push({ label: 'Leadership Info', points: 2 }); }
-
-    // Legal Compliance (5 points each for key registrations)
-    if (ngo.legalDetails) {
-        let legalPoints = 0;
-        if (ngo.legalDetails.registrationNo) legalPoints += 5;
-        if (ngo.legalDetails.section80G) legalPoints += 5;
-        if (ngo.legalDetails.section12A) legalPoints += 5;
-        if (ngo.legalDetails.csr1) legalPoints += 5;
-        if (legalPoints > 0) {
-            score += legalPoints;
-            breakdown.push({ label: 'High-Value Legal IDs (80G/CSR-1)', points: legalPoints });
+    const addCriteria = (label, maxPoints, condition) => {
+        const manualOverride = overrides[label];
+        let achieved, autoPoints;
+        if (typeof condition === 'number') {
+            autoPoints = condition;
+            achieved = condition > 0;
+        } else {
+            autoPoints = condition ? maxPoints : 0;
+            achieved = !!condition;
         }
-    }
+        
+        const pointsValue = manualOverride !== undefined ? manualOverride : autoPoints;
+        
+        breakdown.push({
+            label,
+            points: pointsValue,
+            maxPoints: maxPoints,
+            achieved: achieved,
+            overridden: manualOverride !== undefined
+        });
+        return pointsValue;
+    };
 
-    // Digital & Social Presence
-    if (ngo.website) { score += 3; breakdown.push({ label: 'Official Website', points: 3 }); }
-    const socials = ngo.socialLinks || ngo.socials;
-    if (socials) {
-        let socialPoints = 0;
-        if (socials.facebook) socialPoints += 1;
-        if (socials.instagram) socialPoints += 1;
-        if (socials.youtube) socialPoints += 1;
-        if (socials.linkedin) socialPoints += 1;
-        if (socialPoints > 0) {
-            score += socialPoints;
-            breakdown.push({ label: 'Social Media Sync', points: socialPoints });
-        }
-    }
+    let totalScore = 0;
 
-    // Financial Transparency
-    if (ngo.financials) {
-        let finPoints = 0;
-        if (ngo.financials.upiId) finPoints += 5;
-        if (ngo.financials.auditStatus === 'Audited') finPoints += 5;
-        if (ngo.financials.reportsLink) finPoints += 5;
-        if (finPoints > 0) {
-            score += finPoints;
-            breakdown.push({ label: 'Financial Transparency', points: finPoints });
-        }
-    } else if (ngo.mockUPI || ngo.bankDetails) {
-        score += 5;
-        breakdown.push({ label: 'Payment Channel', points: 5 });
-    }
+    // 1. Digital Base
+    totalScore += addCriteria('Official Website', 5, !!ngo.website);
+    totalScore += addCriteria('Verified Email', 2, !!(ngo.email || ngo.socialLinks?.email));
+    totalScore += addCriteria('Direct Contact Info', 2, !!ngo.contact);
+    totalScore += addCriteria('Physical Address', 2, !!ngo.address);
+    totalScore += addCriteria('Mission Transparency', 4, !!(ngo.description || ngo.longDescription));
 
-    // Geographic Reach & Impact
-    if (ngo.geoReach && ngo.geoReach.length > 0) {
-        score += 5;
-        breakdown.push({ label: 'Geographic Focus', points: 5 });
-    }
-    if (ngo.impactStats && ngo.impactStats.length > 0) {
-        score += 10;
-        breakdown.push({ label: 'Quantifiable Impact Stats', points: 10 });
-    }
-    if (ngo.programs && ngo.programs.length > 0) {
-        score += 5;
-        breakdown.push({ label: 'Program Portfolio', points: 5 });
-    }
+    // 2. Legal Compliance
+    totalScore += addCriteria('Legal Registration', 2, !!ngo.legalDetails?.registrationNo);
+    totalScore += addCriteria('80G Tax Exemption', 8, !!ngo.legalDetails?.section80G);
+    totalScore += addCriteria('12A Registration', 5, !!ngo.legalDetails?.section12A);
+    totalScore += addCriteria('CSR-1 Registration', 8, !!ngo.legalDetails?.csr1);
+    totalScore += addCriteria('PAN Identity', 2, !!ngo.legalDetails?.panNo);
 
-    // Certifications (5 points each)
-    if (ngo.certifications && ngo.certifications.length > 0) {
-        const certPoints = ngo.certifications.length * 5;
-        score += certPoints;
-        breakdown.push({ label: 'Verified Certifications', points: certPoints });
-    }
+    // 3. Leadership Transparency
+    const leaders = [...(ngo.boardOfDirectors || []), ...(ngo.teamAndLeadership || [])];
+    totalScore += addCriteria('Organizational Chart', 5, leaders.length > 0);
+    
+    const linkedinCount = leaders.filter(l => l.linkedin).length;
+    totalScore += addCriteria('Leadership Professional Verification', 10, linkedinCount > 0);
 
-    // Verified Status (15 points) -> Significant bump
-    if (ngo.verified) { 
-        score += 15; 
-        breakdown.push({ label: 'Platform Verified', points: 15 }); 
-    }
+    // 4. Technology
+    totalScore += addCriteria('Android App Presence', 5, !!ngo.appLinks?.android);
+    totalScore += addCriteria('iOS App Presence', 5, !!ngo.appLinks?.ios);
 
-    // Normalize to 100
-    // Estimated max points: ~120
-    const normalizedScore = Math.min(Math.round((score / 100) * 100), 100);
+    // 5. Social Media
+    totalScore += addCriteria('Facebook Presence', 2, !!ngo.socialLinks?.facebook);
+    totalScore += addCriteria('Instagram Presence', 2, !!ngo.socialLinks?.instagram);
+    totalScore += addCriteria('YouTube Presence', 2, !!ngo.socialLinks?.youtube);
+    totalScore += addCriteria('LinkedIn Page', 2, !!ngo.socialLinks?.linkedin);
+
+    // 6. Social Proof
+    totalScore += addCriteria('Data-Backed Impact', 10, !!(ngo.impactStats && ngo.impactStats.length > 0));
+    totalScore += addCriteria('Awards & Recognition', 5, !!(ngo.awards && ngo.awards.length > 0));
+    totalScore += addCriteria('Beneficiary Testimonials', 5, !!(ngo.testimonials && ngo.testimonials.length > 0));
+    totalScore += addCriteria('Active Volunteer Opportunities', 5, !!ngo.volunteerOps);
+
+    // 7. Admin PR
+    let prPoints = 0;
+    if (ngo.adminPR) {
+        const pr = ngo.adminPR;
+        // Base points for having PR data (4) + visit (6) + ratings (avg of 4 ratings, max 10)
+        // Total Max: 4 + 6 + 10 = 20
+        prPoints = 4;
+        if (pr.fieldVisitDone) prPoints += 6;
+        
+        const ratingsSum = (pr.experienceScore || 0) + 
+                          (pr.transparencyRating || 0) + 
+                          (pr.teamResponsiveness || 0) + 
+                          (pr.reputationScore || 0);
+        prPoints += Math.round(ratingsSum / 4);
+    }
+    totalScore += addCriteria('Admin PR Field Verification', 20, prPoints);
+
+    // 8. Financials
+    totalScore += addCriteria('UPI Donation Integration', 5, !!ngo.financials?.upiId);
+    totalScore += addCriteria('Audited Status', 5, ngo.financials?.auditStatus === 'Audited');
+    totalScore += addCriteria('Public Financial Reports', 5, !!ngo.financials?.reportsLink);
+
+    // 9. Verified Badge
+    totalScore += addCriteria('Platform Verification Badge', 10, !!ngo.verified);
+
+    const normalizedScore = Math.min(totalScore, 100);
+
+    // Legacy manualScore Support
+    if (ngo.manualScore !== undefined && ngo.manualScore !== null) {
+        return {
+            score: ngo.manualScore,
+            rawScore: totalScore,
+            breakdown,
+            level: getLevel(ngo.manualScore),
+            isManual: true
+        };
+    }
 
     return {
         score: normalizedScore,
-        rawScore: score,
+        rawScore: totalScore,
         breakdown,
-        level: normalizedScore >= 80 ? 'High Trust' : normalizedScore >= 50 ? 'Moderate Trust' : 'Needs More Info'
+        level: getLevel(normalizedScore),
+        isManual: !!Object.keys(overrides).length
     };
+};
+
+const getLevel = (score) => {
+    if (score >= 80) return 'Highly Trusted';
+    if (score >= 50) return 'Moderately Trusted';
+    return 'Emerging Trust';
 };

@@ -26,6 +26,18 @@ const NGOSchema = new mongoose.Schema({
         name: String,
         role: String
     }],
+    boardOfDirectors: [{
+        name: String,
+        role: String,
+        profileUrl: String,
+        linkedin: String
+    }],
+    teamAndLeadership: [{
+        name: String,
+        role: String,
+        profileUrl: String,
+        linkedin: String
+    }],
     impactStats: [{
         label: String,
         value: String,
@@ -46,7 +58,33 @@ const NGOSchema = new mongoose.Schema({
         instagram: String,
         facebook: String,
         youtube: String,
+        linkedin: String,
         email: String
+    },
+    appLinks: {
+        android: String,
+        ios: String
+    },
+    awards: [{ type: String }],
+    volunteerOps: { type: Boolean, default: false },
+    testimonials: [{
+        name: String,
+        quote: String,
+        role: String
+    }],
+    adminPR: {
+        experienceScore: Number,
+        transparencyRating: Number,
+        teamResponsiveness: Number,
+        reputationScore: Number,
+        fieldVisitDone: Boolean,
+        visitNotes: String,
+        lastUpdated: Date
+    },
+    trustScoreOverrides: {
+        type: Map,
+        of: Number,
+        default: {}
     }
 }, { timestamps: true });
 

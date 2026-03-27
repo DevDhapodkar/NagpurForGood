@@ -20,17 +20,19 @@ export const ngoData = [
             section80G: "AAAAF5887BF20214",
             section12A: "AAAAF5887BE20216"
         },
-        leadership: [
+        boardOfDirectors: [
             { name: "A. Bharadwaj", role: "Founder" },
             { name: "Rajnish Khandagale", role: "President" },
+            { name: "Saroj Kuppalwar", role: "Board Member" }
+        ],
+        teamAndLeadership: [
             { name: "Bhumika Pelne", role: "Vice President" },
             { name: "Rohit Meshram", role: "Secretary" },
             { name: "Vinesh Ukey", role: "Treasurer" },
             { name: "Monu Thosar", role: "Joint Secretary" },
             { name: "Ansh Dhomne", role: "IT Head" },
             { name: "Anita Katam", role: "Sr. Team Leader" },
-            { name: "Sunny Raj", role: "Team Leader" },
-            { name: "Saroj Kuppalwar", role: "Board Member" }
+            { name: "Sunny Raj", role: "Team Leader" }
         ],
         impactStats: [
             {
@@ -136,8 +138,10 @@ export const ngoData = [
             section80G: "AAAA00000000",
             section12A: "AAAA00000001"
         },
-        leadership: [
-            { name: "Leadership Person A", role: "President" },
+        boardOfDirectors: [
+            { name: "Leadership Person A", role: "President" }
+        ],
+        teamAndLeadership: [
             { name: "Leadership Person B", role: "Director" },
             { name: "Leadership Person C", role: "Secretary" }
         ],

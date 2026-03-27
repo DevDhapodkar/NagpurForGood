@@ -40,9 +40,14 @@ const NGOCard = ({ ngo }) => {
             </div>
 
             <div className="p-7 flex flex-col flex-grow relative">
-                <h3 className="text-2xl font-black text-[var(--text-primary)] mb-3 group-hover:text-red-400 transition-colors font-serif">
+                <h3 className="text-2xl font-black text-[var(--text-primary)] mb-1 group-hover:text-red-400 transition-colors font-serif">
                     {ngo.name}
                 </h3>
+                {ngo.tagline && (
+                    <p className="text-xs font-bold text-orange-500/70 uppercase tracking-widest mb-3 line-clamp-1 italic">
+                        {ngo.tagline}
+                    </p>
+                )}
                 <p className="text-sm text-[var(--text-secondary)] mb-6 line-clamp-2 leading-relaxed font-light">
                     {ngo.description || "Dedicated to social welfare and community support in Nagpur."}
                 </p>
