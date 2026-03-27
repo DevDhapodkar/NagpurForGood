@@ -10,33 +10,48 @@ NagpurGoodOrg is a high-fidelity, transparent information portal designed to bri
 
 Built with a modern **Glassmorphism** aesthetic, the platform offers a premium, immersive experience that emphasizes data clarity and visual excellence.
 
-### 🏠 Intelligent Discovery
-Filter NGOs by cause—Education, Healthcare, Environment, and more—with an interactive, responsive grid.
-
-![Home Page Experience](./docs/assets/home.png)
-
-### 🏙️ Deep-Dive Organization Portals
-Every NGO has a dedicated space featuring their mission, detailed programs, and verified leadership.
-
-![NGO Portal Hero](./docs/assets/detail_hero.png)
-
 ---
 
-## 🛡️ Absolute Data Integrity (Primary Sourcing)
+## 🚀 Core Features
 
-We enforce a strict **Primary Source Only** policy. All impact benchmarks and milestones are linked directly to the organizations' official digital assets.
+### 🔍 Intelligent Discovery & Directory
+- **Multi-Factor Filtering**: Discover organizations by cause (Education, Healthcare, Environment, etc.) and impact level.
+- **Instant Search**: Real-time filtering of verified local organizations.
+- **Responsive NGO Grid**: A beautiful, animated grid view showcasing NGO cards with quick-glance metrics.
 
-### 🔗 Transparency Hub
-- **Click-to-Source**: Every benchmark is a live redirect to official records.
-- **Verified Metrics**: Data on 127,600+ Langar meals and 198,000+ lives impacted cross-referenced with official portals.
-- **Zero Third-Party Aggregators**: We bypass middleman data for 100% authenticity.
+### 🏙️ Deep-Dive Organization Portals
+Every NGO has a dedicated, high-fidelity landing page featuring:
+- **Verified Mission & Vision**: Direct transparency into organizational goals.
+- **Dynamic Programs**: Detailed breakdowns of ongoing initiatives and their results.
+- **Leadership Transparency**: Comprehensive board and team sections with professional verification links.
+- **Operational Status**: Real-time updates on active projects and urgent needs.
 
-![Transparency Hub & Milestones](./docs/assets/detail_impact.png)
+### 🛡️ Proprietary Trust Score System
+Our custom evaluation engine calculates a 100-point **Trust Score** based on 9 critical dimensions:
+1.  **Digital Base**: Website, verified email, and contact info presence.
+2.  **Legal Compliance**: 12A, 80G, CSR-1, and PAN verification.
+3.  **Leadership Transparency**: Professional verification of board members.
+4.  **Technology Footprint**: App presence and digital accessibility.
+5.  **Social Media Connectivity**: Active engagement across platforms.
+6.  **Social Proof**: Impact stats, awards, and beneficiary testimonials.
+7.  **Admin PR Evaluation**: Live manual assessments and field visit reports.
+8.  **Financial Integrity**: Audited reports and UPI donation integration.
+9.  **Verification Badge**: Official platform endorsement level.
 
-### 👥 Verified Leadership
-Transparent board of directors and team sections, ensuring horizontal accountability and trust.
+### 📈 Interactive Impact Center
+- **Verified Milestones**: Visual tracking of collective impact across the city.
+- **Click-to-Source**: Every benchmark (e.g., meals served, lives impacted) is a live redirect to primary source digital records.
+- **Direct Impact Links**: Direct access to external reports and audit documents.
 
-![Team & Leadership](./docs/assets/detail_team.png)
+### 📝 NGO Management & Registration
+- **Comprehensive Onboarding**: A multi-step registration engine for organizations to join the verified network.
+- **NGO Dashboard**: A private workspace for organizations to update their profiles, manage financial reports, and submit edit requests.
+- **Review Workflow**: A robust system where every profile update is reviewed by platform admins before going live.
+
+### 🏛️ Admin Command Center
+- **NGO Evaluation Portal**: Specialized tools for admins to conduct manual PR evaluations and field visit logging.
+- **Point Overrides**: Capability to manually adjust trust score components for edge cases.
+- **Verification Management**: Secure approval workflow for new NGO applications and data updates.
 
 ---
 
@@ -44,9 +59,11 @@ Transparent board of directors and team sections, ensuring horizontal accountabi
 
 - **Frontend**: React 18 + Vite
 - **Routing**: React Router 7
+- **Database & Auth**: Firebase Firestore + Firebase Authentication
 - **Styling**: TailwindCSS 4 (Premium Glassmorphism System)
 - **Icons**: Lucide React
-- **Animations**: Tailwind Animate + Framer-inspired transitions
+- **Animations**: Framer Motion + Tailwind Animate
+- **Notifications**: Custom Rich Toast System
 
 ---
 
@@ -68,5 +85,9 @@ npm run build
 ```
 
 ---
+
 > [!IMPORTANT]
-> This platform is a verified information hub. All data is cross-referenced against NGO Darpan and official organization portals.
+> **Primary Source Policy**: NagpurGoodOrg enforces a strict primary-source-only data policy. No third-party aggregators are used; all data is cross-referenced against legal records and official organization portals.
+
+---
+> Connect with the heart of Nagpur. Transform intent into impact.
