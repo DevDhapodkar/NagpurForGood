@@ -1,8 +1,10 @@
-import { ArrowRight, MapPin, CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { ArrowRight, MapPin, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { calculateTrustScore } from '../utils/trustScore';
 
 const NGOCard = ({ ngo }) => {
     const isVerified = ngo.certifications && ngo.certifications.length > 0;
+    const { score, level } = calculateTrustScore(ngo);
 
     return (
         <Link
@@ -20,21 +22,25 @@ const NGOCard = ({ ngo }) => {
                 {/* Badges container */}
                 <div className="absolute top-4 left-4 flex flex-wrap gap-2">
                     {ngo.categories.slice(0, 2).map((cat, idx) => (
-                        <span key={idx} className="px-2.5 py-1 rounded-lg text-[10px] uppercase tracking-wider font-black bg-white/20 backdrop-blur-md border border-white/30 text-white shadow-sm">
+                        <span key={idx} className="px-2.5 py-1 rounded-lg text-[10px] uppercase tracking-wider font-black bg-theme-primary/20 backdrop-blur-md border border-theme-primary/30 text-theme-primary shadow-sm">
                             {cat}
                         </span>
                     ))}
                     {isVerified && (
-                        <span className="px-2.5 py-1 rounded-lg text-[10px] uppercase font-black bg-emerald-500/20 backdrop-blur-md border border-emerald-500/30 text-emerald-400 flex items-center gap-1">
-                            <CheckCircle2 className="w-3 h-3" />
-                            Verified
+                        <span className={`px-2.5 py-1 rounded-lg text-[10px] uppercase font-black backdrop-blur-md border flex items-center gap-1 shadow-sm ${
+                            score >= 80 ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400' :
+                            score >= 50 ? 'bg-amber-500/20 border-amber-500/30 text-amber-400' :
+                            'bg-blue-500/20 border-blue-500/30 text-blue-400'
+                        }`}>
+                            <ShieldCheck className="w-3 h-3" />
+                            Trust: {score}%
                         </span>
                     )}
                 </div>
             </div>
 
             <div className="p-7 flex flex-col flex-grow relative">
-                <h3 className="text-2xl font-black text-[var(--text-primary)] mb-3 group-hover:text-pink-400 transition-colors">
+                <h3 className="text-2xl font-black text-[var(--text-primary)] mb-3 group-hover:text-red-400 transition-colors font-serif">
                     {ngo.name}
                 </h3>
                 <p className="text-sm text-[var(--text-secondary)] mb-6 line-clamp-2 leading-relaxed font-light">
@@ -43,11 +49,11 @@ const NGOCard = ({ ngo }) => {
 
                 <div className="mt-auto space-y-4">
                     <div className="flex items-start gap-2 text-xs text-[var(--text-muted)]">
-                        <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-violet-500" />
+                        <MapPin className="w-4 h-4 mt-0.5 shrink-0 text-orange-500" />
                         <span className="line-clamp-1">{ngo.address}</span>
                     </div>
 
-                    <button className="w-full py-4 rounded-2xl glass-btn group-hover:border-violet-500/30 text-[var(--text-primary)] text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-3">
+                    <button className="w-full py-4 rounded-2xl glass-btn group-hover:border-orange-500/30 text-[var(--text-primary)] text-xs font-black uppercase tracking-widest transition-all flex items-center justify-center gap-3">
                         Explore Portfolio
                         <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
                     </button>

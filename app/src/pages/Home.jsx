@@ -2,15 +2,22 @@ import React, { useState, useMemo } from 'react';
 import Hero from '../components/Hero';
 import FilterBar from '../components/FilterBar';
 import NGOGrid from '../components/NGOGrid';
-import { ngoData, allCategories } from '../data/ngoData';
+import { useNGOs } from '../context/NGOContext';
 
 const Home = () => {
+    const { ngoList } = useNGOs();
     const [selectedCategory, setSelectedCategory] = useState('All');
 
+    // Only show verified NGOs to the public
+    const verifiedNGOs = useMemo(() => ngoList.filter(ngo => ngo.verified), [ngoList]);
+
+    // Compute categories from verified NGOs
+    const allCategories = useMemo(() => ["All", ...Array.from(new Set(verifiedNGOs.flatMap(ngo => ngo.categories)))].sort(), [verifiedNGOs]);
+
     const filteredNGOs = useMemo(() => {
-        if (selectedCategory === 'All') return ngoData;
-        return ngoData.filter(ngo => ngo.categories.includes(selectedCategory));
-    }, [selectedCategory]);
+        if (selectedCategory === 'All') return verifiedNGOs;
+        return verifiedNGOs.filter(ngo => ngo.categories?.includes(selectedCategory));
+    }, [selectedCategory, verifiedNGOs]);
 
     return (
         <main>

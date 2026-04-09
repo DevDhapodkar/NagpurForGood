@@ -1,7 +1,15 @@
 @import "tailwindcss";
 
+@theme {
+  --font-sans: 'Outfit', system-ui, sans-serif;
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --color-theme-primary: var(--text-primary);
+  --color-theme-secondary: var(--text-secondary);
+  --color-theme-muted: var(--text-muted);
+}
+
 :root {
-  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: var(--font-sans);
   line-height: 1.5;
   font-weight: 400;
 
@@ -15,8 +23,8 @@
   --glass-bg: rgba(255, 255, 255, 0.03);
   --glass-card-bg: rgba(255, 255, 255, 0.02);
   --glass-input-bg: rgba(0, 0, 0, 0.2);
-  --gradient-1: rgba(124, 58, 237, 0.4);
-  --gradient-2: rgba(236, 72, 153, 0.3);
+  --gradient-1: rgba(249, 115, 22, 0.4); /* orange */
+  --gradient-2: rgba(239, 68, 68, 0.3); /* red */
 
   color-scheme: dark;
   color: var(--text-primary);
@@ -38,8 +46,8 @@
   --glass-bg: rgba(255, 255, 255, 0.7);
   --glass-card-bg: rgba(255, 255, 255, 0.5);
   --glass-input-bg: rgba(255, 255, 255, 0.8);
-  --gradient-1: rgba(124, 58, 237, 0.15);
-  --gradient-2: rgba(236, 72, 153, 0.1);
+  --gradient-1: rgba(249, 115, 22, 0.15);
+  --gradient-2: rgba(34, 197, 94, 0.1);
   color-scheme: light;
 }
 
@@ -70,7 +78,7 @@ body::before {
   left: -10%;
   width: 50vw;
   height: 50vw;
-  background: radial-gradient(circle, var(--gradient-1) 0%, rgba(79,70,229,0.05) 70%, transparent 100%);
+  background: radial-gradient(circle, var(--gradient-1) 0%, rgba(249,115,22,0.05) 70%, transparent 100%);
 }
 
 body::after {
@@ -78,7 +86,7 @@ body::after {
   right: -10%;
   width: 60vw;
   height: 60vw;
-  background: radial-gradient(circle, var(--gradient-2) 0%, rgba(244,63,94,0.05) 70%, transparent 100%);
+  background: radial-gradient(circle, var(--gradient-2) 0%, rgba(34,197,94,0.05) 70%, transparent 100%);
   animation-delay: -10s;
 }
 
@@ -126,7 +134,7 @@ body::after {
 .glass-card:hover {
   background: var(--glass-bg);
   transform: translateY(-4px) scale(1.01);
-  box-shadow: 0 12px 40px -4px rgba(0, 0, 0, 0.1), 0 0 20px rgba(139, 92, 246, 0.05);
+  box-shadow: 0 12px 40px -4px rgba(0, 0, 0, 0.1), 0 0 20px rgba(249, 115, 22, 0.05);
 }
 
 /* Glass Inputs / Buttons */
@@ -140,8 +148,8 @@ body::after {
 
 .glass-input:focus {
   outline: none;
-  border-color: rgba(139, 92, 246, 0.5);
-  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+  border-color: rgba(249, 115, 22, 0.5);
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
 }
 
 .glass-btn {
@@ -163,7 +171,7 @@ body::after {
 
 /* Vibrant Gradient Text */
 .text-gradient {
-  background: linear-gradient(to right, #a78bfa, #f472b6, #fb923c); /* violet-400 to pink-400 to orange-400 */
+  background: linear-gradient(to right, #ea580c, #f59e0b, #f97316); /* orange-400 to green-400 to orange-400 */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

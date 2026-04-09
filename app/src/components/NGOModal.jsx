@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { X, Phone, MapPin, Globe, Instagram, Facebook, Twitter, Youtube, Mail, Award, Calendar, BarChart3, Heart, FileText, Shield, BadgeCheck, Check } from 'lucide-react';
+import { X, Phone, MapPin, Globe, Instagram, Facebook, Twitter, Youtube, Mail, Award, Calendar, BarChart3, Heart, FileText, Shield, ShieldCheck, BadgeCheck, Check } from 'lucide-react';
 
 import { getCertConfig } from '../constants/certifications';
+import { calculateTrustScore } from '../utils/trustScore';
 
 const NGOModal = ({ ngo, onClose }) => {
     const [showDonation, setShowDonation] = useState(false);
+    const trustScore = ngo ? calculateTrustScore(ngo) : null;
 
     // Lock body scroll when modal is open
     useEffect(() => {
@@ -14,7 +16,7 @@ const NGOModal = ({ ngo, onClose }) => {
         };
     }, []);
 
-    if (!ngo) return null;
+    if (!ngo || !trustScore) return null;
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-2 sm:p-6 backdrop-blur-sm animate-in fade-in duration-300">
@@ -34,16 +36,16 @@ const NGOModal = ({ ngo, onClose }) => {
 
                     <button
                         onClick={onClose}
-                        className="absolute top-4 right-4 p-2 rounded-full glass-btn text-[var(--text-primary)] hover:text-pink-400 z-10 hover:rotate-90 transition-transform duration-300"
+                        className="absolute top-4 right-4 p-2 rounded-full glass-btn text-[var(--text-primary)] hover:text-red-400 z-10 hover:rotate-90 transition-transform duration-300"
                     >
                         <X className="w-6 h-6" />
                     </button>
 
                     <div className="absolute bottom-8 left-8 right-8">
-                        <h2 className="text-4xl sm:text-5xl font-black text-white mb-4 tracking-tight drop-shadow-lg">{ngo.name}</h2>
+                        <h2 className="text-4xl sm:text-5xl font-black text-theme-primary mb-4 tracking-tight drop-shadow-lg font-serif">{ngo.name}</h2>
                         <div className="flex flex-wrap gap-2">
                             {ngo.categories.map((cat, idx) => (
-                                <span key={idx} className="px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-[10px] font-black text-white border border-white/10 uppercase tracking-[0.2em] shadow-sm">
+                                <span key={idx} className="px-3 py-1 bg-theme-primary/10 backdrop-blur-md rounded-full text-[10px] font-black text-theme-primary border border-theme-primary/10 uppercase tracking-[0.2em] shadow-sm">
                                     {cat}
                                 </span>
                             ))}
@@ -60,7 +62,7 @@ const NGOModal = ({ ngo, onClose }) => {
                             <div className="flex flex-col sm:flex-row gap-4 mb-8">
                                 <button
                                     onClick={() => setShowDonation(true)}
-                                    className="flex-1 py-4 px-10 rounded-2xl font-black text-white bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-500 hover:to-pink-500 shadow-[0_0_30px_rgba(236,72,153,0.4)] hover:shadow-[0_0_40px_rgba(236,72,153,0.6)] transition-all transform hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-3 uppercase tracking-widest text-xs sm:text-sm"
+                                    className="flex-1 py-4 px-10 rounded-2xl font-black text-white bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 shadow-[0_0_30px_rgba(239,68,68,0.4)] hover:shadow-[0_0_40px_rgba(239,68,68,0.6)] transition-all transform hover:-translate-y-1 active:scale-95 flex items-center justify-center gap-3 uppercase tracking-widest text-xs sm:text-sm"
                                 >
                                     <Heart className="w-5 h-5 animate-pulse" />
                                     GIVE DIRECT SUPPORT
@@ -69,7 +71,7 @@ const NGOModal = ({ ngo, onClose }) => {
                                     href={ngo.website && !ngo.website.includes('example.com') ? ngo.website : `https://www.google.com/search?q=${encodeURIComponent(ngo.name + " Nagpur")}`}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="flex-1 py-4 px-6 rounded-2xl font-black text-center border-2 border-[var(--border-color)] hover:border-violet-500/30 text-[var(--text-primary)] transition-all flex items-center justify-center gap-3 glass-panel shadow-xl uppercase tracking-widest text-xs sm:text-sm"
+                                    className="flex-1 py-4 px-6 rounded-2xl font-black text-center border-2 border-[var(--border-color)] hover:border-orange-500/30 text-[var(--text-primary)] transition-all flex items-center justify-center gap-3 glass-panel shadow-xl uppercase tracking-widest text-xs sm:text-sm"
                                 >
                                     <Globe className="w-5 h-5" />
                                     OFFICIAL PORTAL
@@ -81,7 +83,7 @@ const NGOModal = ({ ngo, onClose }) => {
                                 <div className="grid grid-cols-2 gap-4">
                                     {ngo.impactStats.map((stat, idx) => (
                                         <div key={idx} className="glass-card p-4 rounded-2xl flex flex-col items-center">
-                                            <BarChart3 className="w-5 h-5 text-violet-400 mb-1" />
+                                            <BarChart3 className="w-5 h-5 text-orange-400 mb-1" />
                                             <span className="text-2xl font-black text-[var(--text-primary)]">{stat.value}</span>
                                             <span className="text-xs text-[var(--text-muted)] uppercase tracking-tighter">{stat.label}</span>
                                         </div>
@@ -91,7 +93,48 @@ const NGOModal = ({ ngo, onClose }) => {
 
                             {/* Certifications Modules */}
                             <section className="animate-in fade-in slide-in-from-bottom-2 delay-75 fill-mode-both">
-                                <h4 className="text-[10px] uppercase tracking-[0.3em] text-[var(--text-muted)] font-black mb-6">Certifications</h4>
+                                <div className="flex items-center justify-between mb-6">
+                                    <h4 className="text-[10px] uppercase tracking-[0.3em] text-[var(--text-muted)] font-black">Trust & Transparency</h4>
+                                    <div className={`px-4 py-1.5 rounded-xl border flex items-center gap-2 ${
+                                        trustScore.score >= 80 ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-500' :
+                                        trustScore.score >= 50 ? 'bg-amber-500/10 border-amber-500/20 text-amber-500' :
+                                        'bg-blue-500/10 border-blue-500/20 text-blue-500'
+                                    }`}>
+                                        <ShieldCheck className="w-4 h-4" />
+                                        <span className="font-black text-sm">{trustScore.score}% Score</span>
+                                        <span className="text-[10px] uppercase tracking-wider opacity-60">({trustScore.level})</span>
+                                    </div>
+                                </div>
+                                
+                                {/* Score Breakdown */}
+                                <div className="mb-6 relative group z-20">
+                                    <div className="bg-theme-primary/5 rounded-[2rem] p-6 border border-theme-primary/5 cursor-help transition-all hover:bg-theme-primary/10">
+                                        <div className="flex items-center justify-between">
+                                            <h5 className="text-[10px] uppercase tracking-widest text-theme-primary/40 font-black">Confidence Meter Breakdown</h5>
+                                            <span className="text-xs font-medium text-theme-primary/60">Hover for Details</span>
+                                        </div>
+                                    </div>
+                                    
+                                    {/* Tooltip / Popup on Hover/Focus */}
+                                    <div className="absolute top-full left-0 right-0 mt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 translate-y-2 group-hover:translate-y-0 drop-shadow-2xl">
+                                        <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 relative">
+                                            {/* Up arrow */}
+                                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-6 h-6 bg-zinc-900 border-l border-t border-zinc-800 rotate-45"></div>
+                                            
+                                            <div className="relative z-10">
+                                                <div className="flex flex-col gap-2">
+                                                    {trustScore.breakdown.map((item, idx) => (
+                                                        <div key={idx} className="flex items-center justify-between py-2 border-b border-zinc-800/50 last:border-0">
+                                                            <span className="text-sm text-zinc-300 font-medium">{item.label}</span>
+                                                            <span className="text-sm font-black text-emerald-400">+{item.points}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     {(ngo.certifications || ["80G", "12A", "NITI Aayog", "NGO Darpan"]).map((cert, idx) => {
                                         const config = getCertConfig(cert);
@@ -116,8 +159,8 @@ const NGOModal = ({ ngo, onClose }) => {
                             {/* About section */}
                             <section className="animate-in fade-in slide-in-from-bottom-2 delay-150 fill-mode-both">
                                 <div className="flex items-center gap-2 mb-4">
-                                    <div className="w-8 h-[2px] bg-violet-500 rounded-full"></div>
-                                    <h4 className="text-xs uppercase tracking-[0.2em] text-violet-400 font-black">Our Mission</h4>
+                                    <div className="w-8 h-[2px] bg-orange-500 rounded-full"></div>
+                                    <h4 className="text-xs uppercase tracking-[0.2em] text-orange-400 font-black">Our Mission</h4>
                                 </div>
                                 <p className="text-[var(--text-secondary)] leading-relaxed text-lg italic font-light serif">
                                     "{ngo.description}"
@@ -128,8 +171,8 @@ const NGOModal = ({ ngo, onClose }) => {
                             {ngo.recentActivities && (
                                 <section className="animate-in fade-in slide-in-from-bottom-2 delay-300 fill-mode-both">
                                     <div className="flex items-center gap-2 mb-6">
-                                        <div className="w-8 h-[2px] bg-pink-500 rounded-full"></div>
-                                        <h4 className="text-xs uppercase tracking-[0.2em] text-pink-400 font-black">Recent Impact & Events</h4>
+                                        <div className="w-8 h-[2px] bg-amber-500 rounded-full"></div>
+                                        <h4 className="text-xs uppercase tracking-[0.2em] text-red-400 font-black">Recent Impact & Events</h4>
                                     </div>
                                     <div className="space-y-4">
                                         {ngo.recentActivities.map((activity, idx) => (
@@ -156,7 +199,7 @@ const NGOModal = ({ ngo, onClose }) => {
                                     <h4 className="text-xs uppercase tracking-widest text-[var(--text-muted)] font-black">Contact Outreach</h4>
                                     <div className="space-y-3">
                                         <div className="flex items-center gap-3 text-[var(--text-primary)]">
-                                            <div className="p-2 rounded-lg bg-violet-500/10 text-violet-400"><Phone className="w-4 h-4" /></div>
+                                            <div className="p-2 rounded-lg bg-orange-500/10 text-orange-400"><Phone className="w-4 h-4" /></div>
                                             <span className="text-sm font-medium">{ngo.contact}</span>
                                         </div>
                                         <div className="flex items-center gap-3 text-[var(--text-primary)]">
@@ -174,7 +217,7 @@ const NGOModal = ({ ngo, onClose }) => {
                                     <h4 className="text-xs uppercase tracking-widest text-[var(--text-muted)] font-black">Social Presence</h4>
                                     <div className="flex flex-wrap gap-3">
                                         {ngo.socialLinks?.instagram && (
-                                            <a href={ngo.socialLinks.instagram} target="_blank" className="p-4 rounded-2xl glass-card text-pink-500 hover:scale-110 transition-all"><Instagram className="w-6 h-6" /></a>
+                                            <a href={ngo.socialLinks.instagram} target="_blank" className="p-4 rounded-2xl glass-card text-red-500 hover:scale-110 transition-all"><Instagram className="w-6 h-6" /></a>
                                         )}
                                         {ngo.socialLinks?.facebook && (
                                             <a href={ngo.socialLinks.facebook} target="_blank" className="p-4 rounded-2xl glass-card text-blue-500 hover:scale-110 transition-all"><Facebook className="w-6 h-6" /></a>
@@ -194,7 +237,7 @@ const NGOModal = ({ ngo, onClose }) => {
                         /* Donation View */
                         <div className="flex flex-col items-center justify-center py-12 space-y-10 animate-in slide-in-from-right-12 duration-500">
                             <div className="text-center">
-                                <div className="inline-flex p-3 rounded-2xl bg-violet-600/10 text-violet-400 mb-6 border border-violet-500/20">
+                                <div className="inline-flex p-3 rounded-2xl bg-orange-600/10 text-orange-400 mb-6 border border-orange-500/20">
                                     <Heart className="w-10 h-10" />
                                 </div>
                                 <h3 className="text-4xl font-black text-[var(--text-primary)] mb-3">Support {ngo.name}</h3>
@@ -207,8 +250,8 @@ const NGOModal = ({ ngo, onClose }) => {
                                     alt="UPI QR Code"
                                     className="w-56 h-56 sm:w-64 sm:h-64 rounded-xl pointer-events-none"
                                 />
-                                <div className="absolute inset-0 bg-white/60 rounded-[2rem] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all backdrop-blur-[4px] cursor-not-allowed">
-                                    <div className="text-white bg-zinc-950 px-6 py-4 rounded-2xl font-black text-lg shadow-2xl rotate-[-5deg] border-2 border-pink-500">VERIFIED FLOW</div>
+                                <div className="absolute inset-0 bg-theme-primary/60 rounded-[2rem] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all backdrop-blur-[4px] cursor-not-allowed">
+                                    <div className="text-white bg-zinc-950 px-6 py-4 rounded-2xl font-black text-lg shadow-2xl rotate-[-5deg] border-2 border-red-500">VERIFIED FLOW</div>
                                 </div>
                             </div>
 
